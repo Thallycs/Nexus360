@@ -10,10 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+import environ # <--- Certifique-se de que essa linha existe
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# INICIALIZA O ENV (Essa é a linha que está faltando!)
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,6 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Seus aplicativos (adicione a linha abaixo exatamente assim):
+    'core.apps.CoreConfig', 
 ]
 
 MIDDLEWARE = [
@@ -72,21 +80,23 @@ WSGI_APPLICATION = 'base.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        # Se for usar funções espaciais (PostGIS), use a linha abaixo:
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        
-        # Se preferir usar o Postgres relacional padrão sem a extensão espacial por enquanto, use:
-        # 'ENGINE': 'django.db.backends.postgresql',
-        
-        'NAME': 'nexus360_db',        # O nome do banco que você criou no pgAdmin
-        'USER': 'postgres',            # Usuário padrão do PostgreSQL
-        'PASSWORD': '824263',  # A senha que você definiu na instalação
-        'HOST': 'localhost',           # Como está rodando na sua máquina, é localhost
-        'PORT': '5432',                # Porta padrão do Postgres
+if env("DATABASE_URL", default=None):
+    DATABASES = {
+        'default': env.db()
     }
-}
+    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+else:
+    DATABASES = {
+        'default': {
+            # MUDE ESSA LINHA ABAIXO PARA O PADRÃO:
+            'ENGINE': 'django.db.backends.postgresql', 
+            'NAME': 'nexus360_db',
+            'USER': 'postgres',
+            'PASSWORD': '824263', # coloque a senha do seu pgAdmin local
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation

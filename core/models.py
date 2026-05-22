@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.gis.db import models as gis_models
 
 # 1. Configurações Globais (Para alterar ícones, imagens e modo)
 class SiteConfiguration(models.Model):
@@ -24,7 +23,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # Campo espacial para geolocalizar onde o projeto de TI será aplicado (ex: campus, cliente)
-    location = gis_models.PointField(blank=True, null=True) 
+    #location = gis_models.PointField(blank=True, null=True) 
 
 # 3. Documentos (Upload/Download)
 class Document(models.Model):
