@@ -1,0 +1,40 @@
+```html
+<!-- core/templates/base.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ config.site_name }}</title>
+    <!-- CSS Dinâmico baseado na preferência do usuário -->
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-sidebar: #0a192f; /* Azul escuro/fechado */
+            --text-color: #ffffff;
+            --accent-color: #007bff; /* Azul clássico */
+        }
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-sidebar: #f0f4f8;
+            --text-color: #000000;
+            --accent-color: #0056b3;
+        }
+        body { background-color: var(--bg-primary); color: var(--text-color); }
+    </style>
+</head>
+<body>
+    <!-- Conteúdo da barra de navegação e as 5 abas -->
+    <button onclick="toggleTheme()">Alternar Tema</button>
+    {% block content %} {% endblock %}
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+        // Aplica o tema salvo ao carregar
+        if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    </script>
+</body>
+</html>
