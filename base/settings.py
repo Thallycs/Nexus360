@@ -88,11 +88,10 @@ if env("DATABASE_URL", default=None):
 else:
     DATABASES = {
         'default': {
-            # MUDE ESSA LINHA ABAIXO PARA O PADRÃO:
-            'ENGINE': 'django.db.backends.postgresql', 
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'nexus360_db',
             'USER': 'postgres',
-            'PASSWORD': '824263', # coloque a senha do seu pgAdmin local
+            'PASSWORD': 'coloque_sua_senha_local_aqui',
             'HOST': 'localhost',
             'PORT': '5432',
         }

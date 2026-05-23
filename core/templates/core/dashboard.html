@@ -1,45 +1,1070 @@
-{% extends 'core/base.html' %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus 360 Solutions — Relatório Operacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #060810;
+    --dark: #0c1120;
+    --panel: #101828;
+    --panel2: #141e30;
+    --blue-bright: #38b6ff;
+    --blue-mid: #1e7ec8;
+    --blue-dark: #0f3460;
+    --teal: #2dd4bf;
+    --green: #22c55e;
+    --orange: #f97316;
+    --navy: #1a2744;
+    --white: #f0f4ff;
+    --muted: #8899bb;
+    --border: rgba(56,182,255,0.15);
+    --glow: rgba(56,182,255,0.25);
+  }
 
-{% block content %}
-<div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-    <h2 style="color: white; text-align: center;">Relatório Operacional - Status dos Projetos</h2>
-    
-    <canvas id="projectChart" width="400" height="400"></canvas>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(56,182,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,182,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── TOP GLOW ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 400px;
+    background: radial-gradient(ellipse, rgba(56,182,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(12,17,32,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo-area {
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .logo-icon {
+    width: 44px; height: 44px;
+    position: relative;
+  }
+
+  .logo-icon svg { width: 100%; height: 100%; }
+
+  .logo-text {
+    display: flex; flex-direction: column; line-height: 1;
+  }
+
+  .logo-text .brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, var(--blue-bright), var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .logo-text .sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--muted); text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .header-right {
+    display: flex; align-items: center; gap: 24px;
+  }
+
+  .live-badge {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--teal); font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+  }
+
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 10px var(--teal);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .date-display {
+    font-size: 12px; color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* ── PAGE TITLE BAR ── */
+  .title-bar {
+    position: relative; z-index: 5;
+    padding: 32px 40px 20px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px; letter-spacing: 4px;
+    line-height: 1;
+    color: var(--white);
+  }
+
+  .page-title span {
+    background: linear-gradient(90deg, var(--blue-bright), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .page-subtitle {
+    font-size: 13px; color: var(--muted);
+    letter-spacing: 3px; text-transform: uppercase;
+    font-family: 'Barlow Condensed', sans-serif;
+    margin-top: 4px;
+  }
+
+  .filter-bar {
+    display: flex; gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 6px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 3px;
+    cursor: pointer; transition: all .2s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--blue-bright);
+    color: var(--blue-bright);
+    background: rgba(56,182,255,0.08);
+  }
+
+  /* ── KPI STRIP ── */
+  .kpi-strip {
+    position: relative; z-index: 5;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 0 40px 24px;
+  }
+
+  .kpi-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+    position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    animation: fadeUp .5s both;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(56,182,255,0.12);
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .kpi-card.blue::before  { background: linear-gradient(90deg, var(--blue-bright), var(--teal)); }
+  .kpi-card.green::before { background: linear-gradient(90deg, var(--teal), var(--green)); }
+  .kpi-card.orange::before{ background: linear-gradient(90deg, var(--orange), #fbbf24); }
+  .kpi-card.navy::before  { background: linear-gradient(90deg, var(--blue-mid), var(--blue-dark)); }
+
+  .kpi-label {
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 46px; line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .kpi-card.blue  .kpi-value { color: var(--blue-bright); }
+  .kpi-card.green .kpi-value { color: var(--teal); }
+  .kpi-card.orange .kpi-value { color: var(--orange); }
+  .kpi-card.navy  .kpi-value { color: #7eb8f7; }
+
+  .kpi-delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 8px;
+    font-size: 12px; font-weight: 600;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .kpi-delta.up   { color: var(--green); }
+  .kpi-delta.down { color: #f87171; }
+  .kpi-delta.same { color: var(--muted); }
+
+  .kpi-bg-icon {
+    position: absolute; right: 16px; bottom: 12px;
+    font-size: 52px; opacity: 0.06; line-height: 1;
+  }
+
+  /* ── MAIN GRID ── */
+  .main-grid {
+    position: relative; z-index: 5;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    padding: 0 40px 40px;
+  }
+
+  /* ── PANEL BASE ── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeUp .5s both;
+  }
+
+  .panel-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .panel-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--blue-bright);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .panel-title::before {
+    content: '';
+    width: 3px; height: 14px; border-radius: 2px;
+    background: linear-gradient(180deg, var(--blue-bright), var(--teal));
+    display: inline-block;
+  }
+
+  .panel-action {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    transition: color .2s;
+  }
+
+  .panel-action:hover { color: var(--blue-bright); }
+
+  /* ── PROJECT TABLE ── */
+  .project-table { width: 100%; border-collapse: collapse; }
+
+  .project-table thead tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-table th {
+    padding: 12px 24px;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+    text-align: left;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .project-table tbody tr {
+    border-bottom: 1px solid rgba(56,182,255,0.06);
+    transition: background .15s;
+  }
+
+  .project-table tbody tr:hover { background: rgba(56,182,255,0.04); }
+
+  .project-table td {
+    padding: 16px 24px;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .proj-name {
+    font-weight: 600; color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; letter-spacing: .5px;
+  }
+
+  .proj-client {
+    font-size: 12px; color: var(--muted); margin-top: 2px;
+  }
+
+  /* STATUS BADGES */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 4px;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+  }
+
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .badge.em-andamento {
+    background: rgba(56,182,255,0.1); color: var(--blue-bright);
+  }
+  .badge.em-andamento .badge-dot { background: var(--blue-bright); box-shadow: 0 0 6px var(--blue-bright); }
+
+  .badge.concluido {
+    background: rgba(34,197,94,0.1); color: var(--green);
+  }
+  .badge.concluido .badge-dot { background: var(--green); }
+
+  .badge.atencao {
+    background: rgba(249,115,22,0.1); color: var(--orange);
+  }
+  .badge.atencao .badge-dot { background: var(--orange); box-shadow: 0 0 6px var(--orange); animation: pulse 2s infinite; }
+
+  .badge.pausado {
+    background: rgba(136,153,187,0.1); color: var(--muted);
+  }
+  .badge.pausado .badge-dot { background: var(--muted); }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .progress-bar {
+    flex: 1; height: 6px;
+    background: rgba(56,182,255,0.1);
+    border-radius: 3px; overflow: hidden;
+    min-width: 80px;
+  }
+
+  .progress-fill {
+    height: 100%; border-radius: 3px;
+    transition: width .8s ease;
+  }
+
+  .progress-fill.blue   { background: linear-gradient(90deg, var(--blue-mid), var(--blue-bright)); }
+  .progress-fill.green  { background: linear-gradient(90deg, var(--teal), var(--green)); }
+  .progress-fill.orange { background: linear-gradient(90deg, #ea580c, var(--orange)); }
+  .progress-fill.grey   { background: var(--muted); }
+
+  .progress-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px; min-width: 40px; text-align: right;
+    letter-spacing: 1px;
+  }
+
+  .progress-pct.blue   { color: var(--blue-bright); }
+  .progress-pct.green  { color: var(--green); }
+  .progress-pct.orange { color: var(--orange); }
+  .progress-pct.grey   { color: var(--muted); }
+
+  /* PRIORITY */
+  .priority {
+    font-size: 11px; letter-spacing: 1px; font-weight: 600;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .priority.alta { color: #f87171; }
+  .priority.media { color: #fbbf24; }
+  .priority.baixa { color: var(--teal); }
+
+  /* RESPONSIBLE AVATAR */
+  .avatar-group { display: flex; gap: -4px; }
+
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--navy);
+    border: 2px solid var(--panel);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0;
+    margin-left: -6px;
+  }
+
+  .avatar:first-child { margin-left: 0; }
+  .avatar.a { background: linear-gradient(135deg, #1e40af, var(--blue-bright)); color: white; }
+  .avatar.b { background: linear-gradient(135deg, #065f46, var(--teal)); color: white; }
+  .avatar.c { background: linear-gradient(135deg, #92400e, var(--orange)); color: white; }
+  .avatar.d { background: linear-gradient(135deg, #4c1d95, #a78bfa); color: white; }
+
+  /* ── RIGHT SIDEBAR ── */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+  /* DONUT CHART */
+  .donut-wrap {
+    padding: 24px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  .donut-svg { width: 160px; height: 160px; transform: rotate(-90deg); }
+
+  .donut-center {
+    display: flex; flex-direction: column; align-items: center;
+    margin-top: 16px;
+  }
+
+  .donut-center .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--blue-bright), var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .donut-center .label {
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .donut-legend {
+    width: 100%;
+    margin-top: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 0 4px;
+  }
+
+  .legend-item {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+  }
+
+  .legend-left { display: flex; align-items: center; gap: 8px; color: var(--white); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-val { color: var(--muted); font-size: 12px; }
+
+  /* ALERT FEED */
+  .alerts-list {
+    padding: 0 16px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .alert-item {
+    padding: 12px 14px;
+    background: var(--panel2);
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    font-size: 13px; line-height: 1.4;
+  }
+
+  .alert-item.warn  { border-color: var(--orange); }
+  .alert-item.info  { border-color: var(--blue-bright); }
+  .alert-item.ok    { border-color: var(--green); }
+
+  .alert-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .alert-item.warn .alert-tag  { color: var(--orange); }
+  .alert-item.info .alert-tag  { color: var(--blue-bright); }
+  .alert-item.ok   .alert-tag  { color: var(--green); }
+
+  .alert-text { color: var(--muted); font-size: 12px; }
+
+  /* ── BOTTOM ROW ── */
+  .bottom-row {
+    position: relative; z-index: 5;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 0 40px 40px;
+  }
+
+  /* MINI CHART BAR */
+  .bar-chart {
+    padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .bar-row {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .bar-row-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; color: var(--muted);
+    width: 110px; flex-shrink: 0; letter-spacing: .5px;
+  }
+
+  .bar-outer {
+    flex: 1; height: 8px;
+    background: rgba(56,182,255,0.08);
+    border-radius: 4px; overflow: hidden;
+  }
+
+  .bar-inner {
+    height: 100%; border-radius: 4px;
+    position: relative;
+  }
+
+  .bar-inner::after {
+    content: '';
+    position: absolute; right: 0; top: 0; bottom: 0;
+    width: 4px; border-radius: 2px;
+    filter: brightness(1.5);
+    background: inherit;
+  }
+
+  .bar-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px; letter-spacing: 1px; min-width: 36px;
+    text-align: right;
+  }
+
+  /* TIMELINE */
+  .timeline-wrap { padding: 20px 24px; }
+
+  .timeline-item {
+    display: flex; gap: 16px;
+    padding-bottom: 20px;
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 15px; top: 28px; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .timeline-item:last-child::before { display: none; }
+
+  .tl-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--panel2);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 13px;
+    position: relative; z-index: 1;
+  }
+
+  .tl-dot.blue  { border-color: var(--blue-bright); box-shadow: 0 0 10px rgba(56,182,255,0.3); }
+  .tl-dot.green { border-color: var(--green); box-shadow: 0 0 10px rgba(34,197,94,0.3); }
+  .tl-dot.orange{ border-color: var(--orange); box-shadow: 0 0 10px rgba(249,115,22,0.3); }
+
+  .tl-content { flex: 1; padding-top: 4px; }
+
+  .tl-title {
+    font-size: 14px; font-weight: 600; color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif; letter-spacing: .5px;
+  }
+
+  .tl-meta {
+    font-size: 11px; color: var(--muted);
+    margin-top: 2px; letter-spacing: .5px;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── NAV TABS ── */
+  nav {
+    position: relative; z-index: 5;
+    display: flex; gap: 0;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .nav-tab {
+    padding: 12px 22px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all .2s;
+  }
+
+  .nav-tab.active {
+    color: var(--blue-bright);
+    border-bottom-color: var(--blue-bright);
+  }
+
+  .nav-tab:hover:not(.active) { color: var(--white); }
+
+  /* ── DECORATIVE CORNER ── */
+  .corner-deco {
+    position: fixed; right: 0; bottom: 0;
+    width: 300px; height: 300px;
+    background: radial-gradient(ellipse at bottom right, rgba(249,115,22,0.06) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="corner-deco"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="2,34 14,14 22,24 30,10 42,10" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <polygon points="22,24 26,18 30,22 26,28" fill="url(#g2)" opacity="0.9"/>
+        <line x1="36" y1="10" x2="42" y2="4" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="g1" x1="2" y1="34" x2="42" y2="10" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2dd4bf"/>
+            <stop offset="50%" stop-color="#38b6ff"/>
+            <stop offset="100%" stop-color="#1a2744"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="22" y1="18" x2="30" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#38b6ff"/>
+            <stop offset="100%" stop-color="#f97316"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="brand">NEXUS 360</span>
+      <span class="sub">Solutions</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>Ao Vivo</div>
+    <div class="date-display" id="datetime">—</div>
+  </div>
+</header>
+
+<!-- NAV TABS -->
+<nav>
+  <div class="nav-tab active">Projetos</div>
+  <div class="nav-tab">Equipes</div>
+  <div class="nav-tab">Finanças</div>
+  <div class="nav-tab">Relatórios</div>
+  <div class="nav-tab">Configurações</div>
+</nav>
+
+<!-- TITLE BAR -->
+<div class="title-bar">
+  <div>
+    <div class="page-title">Relatório <span>Operacional</span></div>
+    <div class="page-subtitle">Núcleo de Projetos &amp; Eficiência Operacional</div>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active">Hoje</button>
+    <button class="filter-btn">Semana</button>
+    <button class="filter-btn">Mês</button>
+    <button class="filter-btn">Trimestre</button>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- KPI STRIP -->
+<div class="kpi-strip">
+  <div class="kpi-card blue">
+    <div class="kpi-label">Projetos Ativos</div>
+    <div class="kpi-value">24</div>
+    <div class="kpi-delta up">▲ +3 este mês</div>
+    <div class="kpi-bg-icon">📁</div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-label">Concluídos</div>
+    <div class="kpi-value">87</div>
+    <div class="kpi-delta up">▲ +12% vs anterior</div>
+    <div class="kpi-bg-icon">✅</div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="kpi-label">Em Atenção</div>
+    <div class="kpi-value">5</div>
+    <div class="kpi-delta down">▼ 2 críticos</div>
+    <div class="kpi-bg-icon">⚠️</div>
+  </div>
+  <div class="kpi-card navy">
+    <div class="kpi-label">Eficiência Geral</div>
+    <div class="kpi-value">94%</div>
+    <div class="kpi-delta up">▲ +2pts vs meta</div>
+    <div class="kpi-bg-icon">📈</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+
+  <!-- TABLE PANEL -->
+  <div class="panel" style="animation-delay:.25s">
+    <div class="panel-header">
+      <div class="panel-title">Status dos Projetos</div>
+      <div class="panel-action">Ver todos →</div>
+    </div>
+    <table class="project-table">
+      <thead>
+        <tr>
+          <th>Projeto</th>
+          <th>Status</th>
+          <th>Progresso</th>
+          <th>Prioridade</th>
+          <th>Equipe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="proj-name">Sistema ERP Industrial</div>
+            <div class="proj-client">Cliente: Metalúrgica Fortex</div>
+          </td>
+          <td><span class="badge em-andamento"><span class="badge-dot"></span>Em Andamento</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill blue" style="width:72%"></div></div>
+              <span class="progress-pct blue">72%</span>
+            </div>
+          </td>
+          <td><span class="priority alta">Alta</span></td>
+          <td>
+            <div class="avatar-group">
+              <div class="avatar a">RM</div>
+              <div class="avatar b">KL</div>
+              <div class="avatar c">PS</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="proj-name">Portal Logístico B2B</div>
+            <div class="proj-client">Cliente: Grupo TransLog</div>
+          </td>
+          <td><span class="badge concluido"><span class="badge-dot"></span>Concluído</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+              <span class="progress-pct green">100%</span>
+            </div>
+          </td>
+          <td><span class="priority media">Média</span></td>
+          <td>
+            <div class="avatar-group">
+              <div class="avatar d">AN</div>
+              <div class="avatar a">RM</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="proj-name">Automação de Relatórios</div>
+            <div class="proj-client">Cliente: Banco Meridian</div>
+          </td>
+          <td><span class="badge atencao"><span class="badge-dot"></span>Atenção</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill orange" style="width:38%"></div></div>
+              <span class="progress-pct orange">38%</span>
+            </div>
+          </td>
+          <td><span class="priority alta">Alta</span></td>
+          <td>
+            <div class="avatar-group">
+              <div class="avatar c">PS</div>
+              <div class="avatar b">KL</div>
+              <div class="avatar d">AN</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="proj-name">Infraestrutura Cloud</div>
+            <div class="proj-client">Cliente: Nexus Interno</div>
+          </td>
+          <td><span class="badge em-andamento"><span class="badge-dot"></span>Em Andamento</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill blue" style="width:58%"></div></div>
+              <span class="progress-pct blue">58%</span>
+            </div>
+          </td>
+          <td><span class="priority media">Média</span></td>
+          <td>
+            <div class="avatar-group">
+              <div class="avatar a">RM</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="proj-name">BI & Analytics Dashboard</div>
+            <div class="proj-client">Cliente: Varejo MaxStore</div>
+          </td>
+          <td><span class="badge pausado"><span class="badge-dot"></span>Pausado</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill grey" style="width:25%"></div></div>
+              <span class="progress-pct grey">25%</span>
+            </div>
+          </td>
+          <td><span class="priority baixa">Baixa</span></td>
+          <td>
+            <div class="avatar-group">
+              <div class="avatar b">KL</div>
+              <div class="avatar d">AN</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="proj-name">Integração SAP × CRM</div>
+            <div class="proj-client">Cliente: Distribuidora Prata</div>
+          </td>
+          <td><span class="badge em-andamento"><span class="badge-dot"></span>Em Andamento</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill blue" style="width:85%"></div></div>
+              <span class="progress-pct blue">85%</span>
+            </div>
+          </td>
+          <td><span class="priority alta">Alta</span></td>
+          <td>
+            <div class="avatar-group">
+              <div class="avatar a">RM</div>
+              <div class="avatar c">PS</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- DONUT -->
+    <div class="panel" style="animation-delay:.3s">
+      <div class="panel-header">
+        <div class="panel-title">Distribuição</div>
+      </div>
+      <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(56,182,255,0.08)" stroke-width="20"/>
+          <!-- Em Andamento 50% -->
+          <circle cx="80" cy="80" r="60" fill="none" stroke="url(#dg1)" stroke-width="20"
+            stroke-dasharray="188.5 188.5" stroke-dashoffset="0" stroke-linecap="round"/>
+          <!-- Concluído 33% -->
+          <circle cx="80" cy="80" r="60" fill="none" stroke="#22c55e" stroke-width="20"
+            stroke-dasharray="124.4 253.6" stroke-dashoffset="-188.5" stroke-linecap="round"/>
+          <!-- Atenção 12% -->
+          <circle cx="80" cy="80" r="60" fill="none" stroke="#f97316" stroke-width="20"
+            stroke-dasharray="45.2 332.8" stroke-dashoffset="-312.9" stroke-linecap="round"/>
+          <!-- Pausado 5% -->
+          <circle cx="80" cy="80" r="60" fill="none" stroke="#8899bb" stroke-width="20"
+            stroke-dasharray="18.8 359.2" stroke-dashoffset="-358.1" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="dg1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#38b6ff"/>
+              <stop offset="100%" stop-color="#2dd4bf"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="donut-center">
+          <div class="big-num">24</div>
+          <div class="label">Projetos Total</div>
+        </div>
+        <div class="donut-legend">
+          <div class="legend-item">
+            <div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Em Andamento</div>
+            <div class="legend-val">12 · 50%</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left"><div class="legend-dot" style="background:var(--green)"></div>Concluídos</div>
+            <div class="legend-val">8 · 33%</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left"><div class="legend-dot" style="background:var(--orange)"></div>Em Atenção</div>
+            <div class="legend-val">3 · 12%</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left"><div class="legend-dot" style="background:var(--muted)"></div>Pausados</div>
+            <div class="legend-val">1 · 5%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="panel" style="animation-delay:.35s">
+      <div class="panel-header">
+        <div class="panel-title">Alertas</div>
+        <div class="panel-action">3 novos</div>
+      </div>
+      <div class="alerts-list">
+        <div class="alert-item warn">
+          <div class="alert-tag">⚠ Atenção</div>
+          <div class="alert-text">Automação de Relatórios com 18 dias de atraso — revisão necessária.</div>
+        </div>
+        <div class="alert-item info">
+          <div class="alert-tag">◈ Atualização</div>
+          <div class="alert-text">SAP × CRM atingiu 85% — entrega prevista em 4 dias.</div>
+        </div>
+        <div class="alert-item ok">
+          <div class="alert-tag">✓ Concluído</div>
+          <div class="alert-text">Portal Logístico B2B entregue e aprovado pelo cliente.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM ROW -->
+<div class="bottom-row">
+
+  <!-- BAR CHART: EFICIÊNCIA POR ÁREA -->
+  <div class="panel" style="animation-delay:.4s">
+    <div class="panel-header">
+      <div class="panel-title">Eficiência por Área</div>
+    </div>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <div class="bar-row-label">Desenvolvimento</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:92%;background:linear-gradient(90deg,var(--blue-mid),var(--blue-bright))"></div></div>
+        <div class="bar-val" style="color:var(--blue-bright)">92%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-row-label">Gestão de Projetos</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:88%;background:linear-gradient(90deg,var(--teal),var(--green))"></div></div>
+        <div class="bar-val" style="color:var(--teal)">88%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-row-label">Infra & Cloud</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:79%;background:linear-gradient(90deg,#1e40af,var(--blue-bright))"></div></div>
+        <div class="bar-val" style="color:#7eb8f7">79%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-row-label">Análise de Dados</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:95%;background:linear-gradient(90deg,var(--teal),#38f5d8)"></div></div>
+        <div class="bar-val" style="color:var(--green)">95%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-row-label">Integrações</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:67%;background:linear-gradient(90deg,#ea580c,var(--orange))"></div></div>
+        <div class="bar-val" style="color:var(--orange)">67%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-row-label">Suporte Técnico</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:84%;background:linear-gradient(90deg,#1e40af,var(--blue-mid))"></div></div>
+        <div class="bar-val" style="color:#7eb8f7">84%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="panel" style="animation-delay:.45s">
+    <div class="panel-header">
+      <div class="panel-title">Atividade Recente</div>
+    </div>
+    <div class="timeline-wrap">
+      <div class="timeline-item">
+        <div class="tl-dot green">✓</div>
+        <div class="tl-content">
+          <div class="tl-title">Portal Logístico B2B — Entregue</div>
+          <div class="tl-meta">Hoje · 09:42 · por Rafaela Mendes</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot blue">↑</div>
+        <div class="tl-content">
+          <div class="tl-title">SAP × CRM avançou para 85%</div>
+          <div class="tl-meta">Hoje · 08:15 · por Pedro Silva</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot orange">!</div>
+        <div class="tl-content">
+          <div class="tl-title">Automação de Relatórios — Alerta gerado</div>
+          <div class="tl-meta">Ontem · 17:30 · Sistema automático</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot blue">+</div>
+        <div class="tl-content">
+          <div class="tl-title">Novo projeto adicionado: BI MaxStore</div>
+          <div class="tl-meta">Ontem · 14:00 · por Karen Lima</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot green">✓</div>
+        <div class="tl-content">
+          <div class="tl-title">Sprint #7 do ERP Industrial concluída</div>
+          <div class="tl-meta">22 Mai · 11:00 · por equipe dev</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <script>
-    // Pegando os dados enviados pelo Python/Django e transformando em JavaScript
-    const rawData = [
-        {% for item in data %}
-            { status: "{{ item.status }}", count: {{ item.count }} },
-        {% endfor %}
-    ];
+  // Live datetime
+  function updateTime() {
+    const now = new Date();
+    const opts = { weekday:'short', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+    document.getElementById('datetime').textContent = now.toLocaleString('pt-BR', opts);
+  }
+  updateTime(); setInterval(updateTime, 1000);
 
-    const labels = rawData.map(item => item.status);
-    const counts = rawData.map(item => item.count);
-
-    // Renderizando o Gráfico Relacional
-    const ctx = document.getElementById('projectChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar', // Gráfico de barras (pode mudar para 'pie' se quiser gráfico de pizza)
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Quantidade de Projetos',
-                data: counts,
-                backgroundColor: '#007bff', // Azul solicitado na identidade visual
-                borderColor: '#ffffff',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     });
+  });
+
+  // Nav tabs
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Animate progress bars on load
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.progress-fill').forEach(bar => {
+      const target = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = target; }, 300);
+    });
+    document.querySelectorAll('.bar-inner').forEach(bar => {
+      const target = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = target; }, 400);
+    });
+  });
 </script>
-{% endblock %}
+</body>
+</html>
