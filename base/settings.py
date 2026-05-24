@@ -31,6 +31,7 @@ SECRET_KEY = 'django-insecure-5%+5v$$65dq^er(7eev=jwmq!wera_k9j5%gr+-mp2vuco2zzw
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'nexus360-qyx7.onrender.com',
     'portalnexus360.onrender.com',
     'localhost',
     '127.0.0.1',
