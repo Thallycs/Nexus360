@@ -30,7 +30,12 @@ SECRET_KEY = 'django-insecure-5%+5v$$65dq^er(7eev=jwmq!wera_k9j5%gr+-mp2vuco2zzw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'portalnexus360.onrender.com', 
+    'localhost', 
+    '127.0.0.1',
+    '.onrender.com' # O ponto no início aceita qualquer variação do Render de forma segura
+]
 
 
 # Application definition
