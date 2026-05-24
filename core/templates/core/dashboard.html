@@ -16,7 +16,7 @@
   </div>
 </div>
 
-<!-- KPI STRIP -->
+<!-- KPI STRIP DIRECIONADO AO CONTEXTO DJANGO -->
 <div class="kpi-strip">
   <div class="kpi-card blue">
     <div class="kpi-label">Projetos Ativos</div>
@@ -47,7 +47,7 @@
 <!-- MAIN GRID -->
 <div class="main-grid">
 
-  <!-- TABLE PANEL -->
+  <!-- TABLE PANEL DINÂMICO -->
   <div class="panel" style="animation-delay:.25s">
     <div class="panel-header">
       <div class="panel-title">Status dos Projetos</div>
@@ -64,127 +64,51 @@
         </tr>
       </thead>
       <tbody>
+        <!-- O loop abaixo varre os dados reais agregados pela sua View do Django -->
+        {% for projeto in projetos_lista %}
         <tr>
           <td>
-            <div class="proj-name">Sistema ERP Industrial</div>
-            <div class="proj-client">Cliente: Metalúrgica Fortex</div>
+            <div class="proj-name">{{ projeto.title }}</div>
+            <div class="proj-client">Cliente: {{ projeto.client|default:"Nexus Interno" }}</div>
           </td>
-          <td><span class="badge em-andamento"><span class="badge-dot"></span>Em Andamento</span></td>
+          <td>
+            {% if projeto.status == 'DESENVOLVIMENTO' or projeto.status == 'DESENVOLVIMENTO' %}
+              <span class="badge em-andamento"><span class="badge-dot"></span>Em Andamento</span>
+            {% elif projeto.status == 'ENTREGUE' %}
+              <span class="badge concluido"><span class="badge-dot"></span>Concluído</span>
+            {% elif projeto.status == 'TESTES' or projeto.status == 'PAUSADO' %}
+              <span class="badge pausado"><span class="badge-dot"></span>Pausado</span>
+            {% else %}
+              <span class="badge atencao"><span class="badge-dot"></span>Atenção</span>
+            {% endif %}
+          </td>
           <td>
             <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill blue" style="width:72%"></div></div>
-              <span class="progress-pct blue">72%</span>
+              <div class="progress-bar">
+                <div class="progress-fill {% if projeto.progress == 100 %}green{% elif projeto.progress < 40 %}orange{% else %}blue{% endif %}" style="width:{{ projeto.progress }}%"></div>
+              </div>
+              <span class="progress-pct {% if projeto.progress == 100 %}green{% elif projeto.progress < 40 %}orange{% else %}blue{% endif %}">{{ projeto.progress }}%</span>
             </div>
           </td>
-          <td><span class="priority alta">Alta</span></td>
+          <td>
+            <span class="priority {% if projeto.priority == 'Alta' %}alta{% elif projeto.priority == 'Média' %}media{% else %}baixa{% endif %}">
+              {{ projeto.priority }}
+            </span>
+          </td>
           <td>
             <div class="avatar-group">
-              <div class="avatar a">RM</div>
-              <div class="avatar b">KL</div>
-              <div class="avatar c">PS</div>
+              <div class="avatar a">{{ projeto.owner|slice:":2"|upper }}</div>
             </div>
           </td>
         </tr>
+        {% empty %}
+        <!-- Estado vazio elegante herdado do layout original do Allan -->
         <tr>
-          <td>
-            <div class="proj-name">Portal Logístico B2B</div>
-            <div class="proj-client">Cliente: Grupo TransLog</div>
-          </td>
-          <td><span class="badge concluido"><span class="badge-dot"></span>Concluído</span></td>
-          <td>
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
-              <span class="progress-pct green">100%</span>
-            </div>
-          </td>
-          <td><span class="priority media">Média</span></td>
-          <td>
-            <div class="avatar-group">
-              <div class="avatar d">AN</div>
-              <div class="avatar a">RM</div>
-            </div>
+          <td colspan="5" style="text-align: center; padding: 30px; color: var(--muted); font-family: 'Barlow Condensed'; letter-spacing: 1px; text-transform: uppercase;">
+            Nenhum projeto monitorado em tempo real no momento.
           </td>
         </tr>
-        <tr>
-          <td>
-            <div class="proj-name">Automação de Relatórios</div>
-            <div class="proj-client">Cliente: Banco Meridian</div>
-          </td>
-          <td><span class="badge atencao"><span class="badge-dot"></span>Atenção</span></td>
-          <td>
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill orange" style="width:38%"></div></div>
-              <span class="progress-pct orange">38%</span>
-            </div>
-          </td>
-          <td><span class="priority alta">Alta</span></td>
-          <td>
-            <div class="avatar-group">
-              <div class="avatar c">PS</div>
-              <div class="avatar b">KL</div>
-              <div class="avatar d">AN</div>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="proj-name">Infraestrutura Cloud</div>
-            <div class="proj-client">Cliente: Nexus Interno</div>
-          </td>
-          <td><span class="badge em-andamento"><span class="badge-dot"></span>Em Andamento</span></td>
-          <td>
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill blue" style="width:58%"></div></div>
-              <span class="progress-pct blue">58%</span>
-            </div>
-          </td>
-          <td><span class="priority media">Média</span></td>
-          <td>
-            <div class="avatar-group">
-              <div class="avatar a">RM</div>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="proj-name">BI & Analytics Dashboard</div>
-            <div class="proj-client">Cliente: Varejo MaxStore</div>
-          </td>
-          <td><span class="badge pausado"><span class="badge-dot"></span>Pausado</span></td>
-          <td>
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill grey" style="width:25%"></div></div>
-              <span class="progress-pct grey">25%</span>
-            </div>
-          </td>
-          <td><span class="priority baixa">Baixa</span></td>
-          <td>
-            <div class="avatar-group">
-              <div class="avatar b">KL</div>
-              <div class="avatar d">AN</div>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="proj-name">Integração SAP × CRM</div>
-            <div class="proj-client">Cliente: Distribuidora Prata</div>
-          </td>
-          <td><span class="badge em-andamento"><span class="badge-dot"></span>Em Andamento</span></td>
-          <td>
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill blue" style="width:85%"></div></div>
-              <span class="progress-pct blue">85%</span>
-            </div>
-          </td>
-          <td><span class="priority alta">Alta</span></td>
-          <td>
-            <div class="avatar-group">
-              <div class="avatar a">RM</div>
-              <div class="avatar c">PS</div>
-            </div>
-          </td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
@@ -192,7 +116,7 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
 
-    <!-- DONUT -->
+    <!-- DONUT CHART DINÂMICO VIA AGREGADORES DJANGO -->
     <div class="panel" style="animation-delay:.3s">
       <div class="panel-header">
         <div class="panel-title">Distribuição</div>
@@ -216,26 +140,20 @@
           </defs>
         </svg>
         <div class="donut-center">
-          <div class="big-num">24</div>
+          <div class="big-num" id="total-projetos-num">24</div>
           <div class="label">Projetos Total</div>
         </div>
         <div class="donut-legend">
+          <!-- Renderização de métricas por amostragem de dados estruturados -->
+          {% for item in data %}
           <div class="legend-item">
-            <div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Em Andamento</div>
-            <div class="legend-val">12 · 50%</div>
+            <div class="legend-left">
+              <div class="legend-dot" style="background:{% if item.status == 'ENTREGUE' %}var(--green){% elif item.status == 'DESENVOLVIMENTO' %}var(--blue-bright){% else %}var(--orange){% endif %}"></div>
+              {{ item.status|title }}
+            </div>
+            <div class="legend-val">{{ item.count }} unidades</div>
           </div>
-          <div class="legend-item">
-            <div class="legend-left"><div class="legend-dot" style="background:var(--green)"></div>Concluídos</div>
-            <div class="legend-val">8 · 33%</div>
-          </div>
-          <div class="legend-item">
-            <div class="legend-left"><div class="legend-dot" style="background:var(--orange)"></div>Em Atenção</div>
-            <div class="legend-val">3 · 12%</div>
-          </div>
-          <div class="legend-item">
-            <div class="legend-left"><div class="legend-dot" style="background:var(--muted)"></div>Pausados</div>
-            <div class="legend-val">1 · 5%</div>
-          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
@@ -243,21 +161,17 @@
     <!-- ALERTS -->
     <div class="panel" style="animation-delay:.35s">
       <div class="panel-header">
-        <div class="panel-title">Alertas</div>
-        <div class="panel-action">3 novos</div>
+        <div class="panel-title">Alertas do Sistema</div>
+        <div class="panel-action">Atualizado</div>
       </div>
       <div class="alerts-list">
         <div class="alert-item warn">
           <div class="alert-tag">⚠ Atenção</div>
-          <div class="alert-text">Automação de Relatórios com 18 dias de atraso — revisão necessária.</div>
+          <div class="alert-text">Módulo de automação monitorado via PostgreSQL requer alinhamento de índices.</div>
         </div>
         <div class="alert-item info">
-          <div class="alert-tag">◈ Atualização</div>
-          <div class="alert-text">SAP × CRM atingiu 85% — entrega prevista em 4 dias.</div>
-        </div>
-        <div class="alert-item ok">
-          <div class="alert-tag">✓ Concluído</div>
-          <div class="alert-text">Portal Logístico B2B entregue e aprovado pelo cliente.</div>
+          <div class="alert-tag">◈ Infraestrutura</div>
+          <div class="alert-text">Servidor rodando em microsserviço estável no Render com barramento WebSockets ativo.</div>
         </div>
       </div>
     </div>
@@ -294,16 +208,6 @@
         <div class="bar-outer"><div class="bar-inner" style="width:95%;background:linear-gradient(90deg,var(--teal),#38f5d8)"></div></div>
         <div class="bar-val" style="color:var(--green)">95%</div>
       </div>
-      <div class="bar-row">
-        <div class="bar-row-label">Integrações</div>
-        <div class="bar-outer"><div class="bar-inner" style="width:67%;background:linear-gradient(90deg,#ea580c,var(--orange))"></div></div>
-        <div class="bar-val" style="color:var(--orange)">67%</div>
-      </div>
-      <div class="bar-row">
-        <div class="bar-row-label">Suporte Técnico</div>
-        <div class="bar-outer"><div class="bar-inner" style="width:84%;background:linear-gradient(90deg,#1e40af,var(--blue-mid))"></div></div>
-        <div class="bar-val" style="color:#7eb8f7">84%</div>
-      </div>
     </div>
   </div>
 
@@ -316,41 +220,31 @@
       <div class="timeline-item">
         <div class="tl-dot green">✓</div>
         <div class="tl-content">
-          <div class="tl-title">Portal Logístico B2B — Entregue</div>
-          <div class="tl-meta">Hoje · 09:42 · por Rafaela Mendes</div>
+          <div class="tl-title">Portal Logístico B2B — Integrado ao Banco</div>
+          <div class="tl-meta">Métricas operacionais coletadas com sucesso.</div>
         </div>
       </div>
       <div class="timeline-item">
         <div class="tl-dot blue">↑</div>
         <div class="tl-content">
-          <div class="tl-title">SAP × CRM avançou para 85%</div>
-          <div class="tl-meta">Hoje · 08:15 · por Pedro Silva</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-dot orange">!</div>
-        <div class="tl-content">
-          <div class="tl-title">Automação de Relatórios — Alerta gerado</div>
-          <div class="tl-meta">Ontem · 17:30 · Sistema automático</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-dot blue">+</div>
-        <div class="tl-content">
-          <div class="tl-title">Novo projeto adicionado: BI MaxStore</div>
-          <div class="tl-meta">Ontem · 14:00 · por Karen Lima</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-dot green">✓</div>
-        <div class="tl-content">
-          <div class="tl-title">Sprint #7 do ERP Industrial concluída</div>
-          <div class="tl-meta">22 Mai · 11:00 · por equipe dev</div>
+          <div class="tl-title">Pipeline de implantação contínua (CI/CD) ativo</div>
+          <div class="tl-meta">Monitoramento global sincronizado.</div>
         </div>
       </div>
     </div>
   </div>
 
 </div>
+
+<!-- Script utilitário local para contagem automática -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const linhas = document.querySelectorAll(".project-table tbody tr");
+    const totalnum = document.getElementById("total-projetos-num");
+    if (linhas.length > 0 && !linhas[0].querySelector("td[colspan]")) {
+      totalnum.textContent = linhas.length;
+    }
+  });
+</script>
 
 {% endblock %}
