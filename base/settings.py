@@ -74,7 +74,6 @@ TEMPLATES = [
             ],
         },
     },
-    
 ]
 
 WSGI_APPLICATION = 'base.wsgi.application'
@@ -133,17 +132,20 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
 # ==============================================================================
-# CONFIGURAÇÃO DE ENVIO DE E-MAIL REAL (SMTP VIA VARIÁVEIS DE SISTEMA DO RENDER)
+# CONFIGURAÇÃO DE ENVIO DE E-MAIL REAL (SMTP BLINDADO VIA PORTA 465 SSL)
 # ==============================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 
-# Força a leitura direta do os.environ para garantir persistência no contêiner Linux remoto
+# ALTERAÇÃO CRÍTICA: Mudança de TLS (587) para SSL direto na porta 465
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+# Coleta os dados de autenticação do ambiente com fallback seguro
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'talita.eng.comp@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
-# Diretrizes explícitas de remetente exigidas para servidores de produção SMTP externos
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Remetentes e cabeçalhos de conformidade de rede
+DEFAULT_FROM_EMAIL = f'Nexus 360 <{EMAIL_HOST_USER}>'
 SERVER_EMAIL = EMAIL_HOST_USER
