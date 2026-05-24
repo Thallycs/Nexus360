@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="title-bar">
+  <div>
+    <div class="page-title">Divisão de <span>Equipes</span></div>
+    <div class="page-subtitle">Gerenciamento de Capital Humano e Engenharia</div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">Squads Ativos</div>
+  </div>
+  <ul class="custom-list">
+    <li class="list-item success">
+      <div><strong>Core Engineering Squad</strong> (3 Integrantes)</div>
+      <div style="color:var(--muted); font-size:12px;">Foco: Desenvolvimento de Soluções Críticas</div>
+    </li>
+    <li class="list-item success">
+      <div><strong>DevOps & Infrastructure Team</strong> (2 Integrantes)</div>
+      <div style="color:var(--muted); font-size:12px;">Foco: Cloud Computing e Ambientes Resilientes</div>
+    </li>
+    <li class="list-item warning">
+      <div><strong>Data Science & Analytics</strong> (1 Integrante)</div>
+      <div style="color:var(--muted); font-size:12px;">Foco: Modelagem de Dados e IA</div>
+    </li>
+  </ul>
+</div>
+{% endblock %}

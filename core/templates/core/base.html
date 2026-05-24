@@ -1,40 +1,92 @@
-```html
-<!-- core/templates/base.html -->
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ config.site_name }}</title>
-    <!-- CSS Dinâmico baseado na preferência do usuário -->
-    <style>
-        :root {
-            --bg-primary: #000000;
-            --bg-sidebar: #0a192f; /* Azul escuro/fechado */
-            --text-color: #ffffff;
-            --accent-color: #007bff; /* Azul clássico */
-        }
-        body.light-mode {
-            --bg-primary: #ffffff;
-            --bg-sidebar: #f0f4f8;
-            --text-color: #000000;
-            --accent-color: #0056b3;
-        }
-        body { background-color: var(--bg-primary); color: var(--text-color); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus 360 Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #060810; --dark: #0c1120; --panel: #101828; --panel2: #141e30;
+    --blue-bright: #38b6ff; --blue-mid: #1e7ec8; --blue-dark: #0f3460;
+    --teal: #2dd4bf; --green: #22c55e; --orange: #f97316; --navy: #1a2744;
+    --white: #f0f4ff; --muted: #8899bb; --border: rgba(56,182,255,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-size: 40px 40px; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(56,182,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(56,182,255,0.04) 1px, transparent 1px); }
+  body::after { content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%); width: 900px; height: 400px; background: radial-gradient(ellipse, rgba(56,182,255,0.12) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+  header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; background: rgba(12,17,32,0.95); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+  .logo-area { display: flex; align-items: center; gap: 16px; }
+  .logo-icon { width: 44px; height: 44px; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1; }
+  .logo-text .brand { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 3px; background: linear-gradient(90deg, var(--blue-bright), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo-text .sub { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 24px; }
+  .live-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); font-family: 'Barlow Condensed', sans-serif; font-weight: 600; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 10px var(--teal); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+  .date-display { font-size: 12px; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+  nav { position: relative; z-index: 5; display: flex; padding: 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .nav-tab { padding: 12px 22px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s; text-decoration: none; }
+  .nav-tab.active { color: var(--blue-bright); border-bottom-color: var(--blue-bright); }
+  .title-bar { position: relative; z-index: 5; padding: 32px 40px 20px; }
+  .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 4px; line-height: 1; color: var(--white); }
+  .page-title span { background: linear-gradient(90deg, var(--blue-bright), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .page-subtitle { font-size: 13px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; margin-top: 4px; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 0 40px 24px; padding: 24px; position: relative; z-index: 5; }
+  .panel-header { padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: var(--blue-bright); display: flex; align-items: center; gap: 10px; }
+  .panel-title::before { content: ''; width: 3px; height: 14px; background: linear-gradient(180deg, var(--blue-bright), var(--teal)); display: inline-block; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0 40px 24px; }
+  .grid-2 .panel { margin: 0; }
+  /* Estilos específicos de tabelas e listas */
+  .custom-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .list-item { background: var(--panel2); padding: 14px 20px; border-radius: 6px; border-left: 3px solid var(--blue-bright); display: flex; justify-content: space-between; align-items: center; }
+  .list-item.success { border-left-color: var(--green); }
+  .list-item.warning { border-left-color: var(--orange); }
+  .corner-deco { position: fixed; right: 0; bottom: 0; width: 300px; height: 300px; background: radial-gradient(ellipse at bottom right, rgba(249,115,22,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+</style>
 </head>
 <body>
-    <!-- Conteúdo da barra de navegação e as 5 abas -->
-    <button onclick="toggleTheme()">Alternar Tema</button>
-    {% block content %} {% endblock %}
+<div class="corner-deco"></div>
+<header>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="2,34 14,14 22,24 30,10 42,10" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <defs>
+          <linearGradient id="g1" x1="2" y1="34" x2="42" y2="10" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#2dd4bf"/><stop offset="50%" stop-color="#38b6ff"/><stop offset="100%" stop-color="#1a2744"/></linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="logo-text"><span class="brand">NEXUS 360</span><span class="sub">Solutions</span></div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>Ao Vivo</div>
+    <div class="date-display" id="datetime">—</div>
+  </div>
+</header>
 
-    <script>
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        }
-        // Aplica o tema salvo ao carregar
-        if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
-    </script>
+<nav>
+  <a href="{% url 'dashboard' %}" class="nav-tab {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Projetos</a>
+  <a href="{% url 'equipes_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'equipes_page' %}active{% endif %}">Equipes</a>
+  <a href="{% url 'financas_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'financas_page' %}active{% endif %}">Finanças</a>
+  <a href="{% url 'relatorios_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'relatorios_page' %}active{% endif %}">Relatórios</a>
+  <a href="{% url 'settings_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %}">Configurações</a>
+</nav>
+
+{% block content %}
+<!-- O conteúdo específico de cada página vai entrar aqui -->
+{% endblock %}
+
+<script>
+  function updateTime() {
+    const now = new Date();
+    const opts = { weekday:'short', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+    document.getElementById('datetime').textContent = now.toLocaleString('pt-BR', opts);
+  }
+  updateTime(); setInterval(updateTime, 1000);
+</script>
 </body>
 </html>

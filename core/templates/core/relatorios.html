@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="title-bar">
+  <div>
+    <div class="page-title">Central de <span>Relatórios</span></div>
+    <div class="page-subtitle">Exportação de dados operacionais e logs do sistema</div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header"><div class="panel-title">Documentos Disponíveis para Exportação</div></div>
+  <ul class="custom-list">
+    <li class="list-item">
+      <div>Relatório Executivo Mensal (PDF)</div>
+      <button style="background:var(--blue-mid); border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer;">Exportar</button>
+    </li>
+    <li class="list-item">
+      <div>Planilha de Produtividade Geral (XLSX)</div>
+      <button style="background:var(--blue-mid); border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer;">Exportar</button>
+    </li>
+  </ul>
+</div>
+{% endblock %}

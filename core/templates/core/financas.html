@@ -1,0 +1,21 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="title-bar">
+  <div>
+    <div class="page-title">Métricas <span>Financeiras</span></div>
+    <div class="page-subtitle">Controle de Orçamentos e Alocação de Recursos</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Orçamento por Projeto</div></div>
+    <p style="color:var(--muted);">Faturamento Geral Alocado: <span style="color:var(--green); font-weight:bold;">R$ 240.000,00</span></p>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Status de Faturamento</div></div>
+    <p style="color:var(--muted);">Custos de Infraestrutura Cloud (Render/AWS): <span style="color:var(--orange);">R$ 1.250,00 /mês</span></p>
+  </div>
+</div>
+{% endblock %}
