@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    # 1. Tela Inicial Obrigatória (Raiz do site: http://.../)
+    # 1. Tela Inicial Obrigatória (Raiz do site)
     path('', auth_views.LoginView.as_view(template_name='core/login.html', redirect_authenticated_user=True), name='login'),
     
     # 2. Tela de Cadastro de Novo Usuário
@@ -30,6 +30,9 @@ urlpatterns = [
     path('redefinir/concluido/', auth_views.PasswordResetCompleteView.as_view(
         template_name='core/redefinir_senha_concluido.html'
     ), name='password_reset_complete'),
+
+    # 7. Rota de Logout (Para limpar a sessão e voltar ao login)
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 
     # --- Suas rotas originais mantidas abaixo ---
     path('dashboard/', views.dashboard, name='dashboard'),
