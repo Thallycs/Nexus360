@@ -216,6 +216,7 @@
     box-shadow: 0 4px 12px rgba(56, 182, 255, 0.2);
   }
   .nav-tab:hover {
+    transform: translateY(-1px);
     background: linear-gradient(180deg, transparent, rgba(56, 182, 255, 0.03));
   }
 </style>
@@ -223,11 +224,9 @@
 <body>
 <div class="corner-deco"></div>
 
-<!-- NOVO: O Cabeçalho e a Navegação só renderizam se o usuário estiver autenticado -->
 {% if user.is_authenticated %}
 <header>
   <div class="logo-area">
-    <!-- ÍCONE ATUALIZADO: Código Vetorial SVG Exato e Robusto da image_110609.png -->
     <div class="logo-icon">
       <svg viewBox="0 0 120 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -245,30 +244,24 @@
           </linearGradient>
         </defs>
 
-        <!-- As 3 linhas tecnológicas paralelas entrando pela esquerda -->
         <path d="M10,48 L35,48 L55,20 L75,50" stroke="url(#line-blue)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path d="M10,55 L32,55 L50,30 L67,56" stroke="url(#line-green)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path d="M10,62 L29,62 L45,40 L60,62" stroke="#2dd4bf" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 
-        <!-- Núcleo central tridimensional facetado -->
         <polygon points="55,48 65,48 60,40" fill="#ffedd5" opacity="0.9"/>
         <polygon points="55,48 65,48 60,56" fill="url(#center-orange)"/>
         <polygon points="65,48 75,54 67,56" fill="#1e2744" opacity="0.4"/>
 
-        <!-- Estrutura geométrica que sobe para o lado direito criando o N -->
         <path d="M60,56 L78,82 L102,24" stroke="url(#line-blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path d="M68,56 L83,76 L94,36" stroke="url(#center-orange)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 
-        <!-- Triângulos internos de reflexo azul/branco -->
         <polygon points="55,20 48,28 55,32" fill="#fff" opacity="0.3"/>
         <polygon points="78,82 72,72 82,70" fill="#38b6ff" opacity="0.4"/>
 
-        <!-- Cabeça da Seta de Alta Performance Ascendente -->
         <polygon points="102,24 86,26 95,40" fill="#0f3460" stroke="url(#line-blue)" stroke-width="1.5"/>
       </svg>
     </div>
     
-    <!-- Tipografia oficial com o 360 alinhado -->
     <div class="logo-text">
       <span class="brand">
         NEXUS <span>360</span>
@@ -285,6 +278,7 @@
 
 <nav>
   <a href="{% url 'dashboard' %}" class="nav-tab {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Projetos</a>
+  <a href="{% url 'usuarios_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'usuarios_page' %}active{% endif %}">Usuários</a>
   <a href="{% url 'equipes_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'equipes_page' %}active{% endif %}">Equipes</a>
   <a href="{% url 'financas_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'financas_page' %}active{% endif %}">Finanças</a>
   <a href="{% url 'relatorios_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'relatorios_page' %}active{% endif %}">Relatórios</a>
