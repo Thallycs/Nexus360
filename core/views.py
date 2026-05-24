@@ -6,7 +6,7 @@ from django.contrib.auth.views import PasswordResetView
 from .models import Project, SiteConfiguration, UsuarioNexus
 
 # ==============================================================================
-# 1. VIEW DE CADASTRO DE USUÁRIO (ACESSO LIBERADO SEM TRAVA DE E-MAIL)
+# 1. VIEW DE CADASTRO (ACESSO IMEDIATO PARA OUTROS UTILIZADORES)
 # ==============================================================================
 def cadastro_view(request):
     if request.method == 'POST':
@@ -15,24 +15,21 @@ def cadastro_view(request):
         telefone = request.POST.get('telefone')
         senha = request.POST.get('senha')
 
-        # Validação básica para evitar duplicidade de contas
         if UsuarioNexus.objects.filter(email=email).exists():
             messages.error(request, "Este e-mail já está cadastrado no sistema.")
             return render(request, 'core/cadastro.html')
 
         try:
-            # O usuário nasce ativo (is_active=True) permitindo login imediato em produção
+            # Sincroniza o username com o e-mail para evitar falhas de login
             user = UsuarioNexus.objects.create_user(
-                username=email,  # Chave primária de autenticação atrelada ao e-mail
+                username=email,  
                 email=email,
                 password=senha,
                 first_name=nome_completo,
                 telefone=telefone,
                 is_active=True  
             )
-
-            # Injeta o feedback de sucesso capturado pela tela de Login
-            messages.success(request, "Cadastro realizado com sucesso! Faça seu login abaixo.")
+            messages.success(request, "Cadastro realizado com sucesso! Faça o seu login abaixo.")
             return redirect('login')
 
         except Exception as e:
@@ -43,59 +40,34 @@ def cadastro_view(request):
 
 
 # ==============================================================================
-# 2. VIEW CUSTOMIZADA DE RECUPERAÇÃO DE SENHA (LINK EXPLICITO EM TELA)
-# ==============================================================================
-class PasswordResetVisualView(PasswordResetView):
-    template_name = 'core/esqueci_senha.html'
-    
-    def post(self, request, *args, **kwargs):
-        email = request.POST.get('email', '').strip()
-        
-        # Procura o usuário de forma explícita no banco de dados do Render
-        users = UsuarioNexus.objects.filter(email__iexact=email)
-        
-        if not users.exists():
-            messages.error(request, f"O e-mail '{email}' não foi encontrado no banco de dados PostgreSQL do Nexus 360.")
-            return render(request, self.template_name, {'form': self.get_form()})
-            
-        context = {'email_digitado': email}
-        for user in users:
-            from django.utils.http import urlsafe_base64_encode
-            from django.utils.encoding import force_bytes
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = self.token_generator.make_token(user)
-            
-            domain = request.get_host()
-            protocol = 'https' if request.is_secure() else 'http'
-            link_direto = f"{protocol}://{domain}/redefinir/{uid}/{token}/"
-            
-            context['link_seguro'] = link_direto
-            break
-            
-        return render(request, 'core/esqueci_senha_enviado.html', context)
-
-
-# ==============================================================================
-# 3. VIEW DO DASHBOARD (PROTEGIDA POR LOGIN)
+# 2. VIEW DO DASHBOARD (ABRE O LAYOUT OPERACIONAL IGUAL AO VÍDEO)
 # ==============================================================================
 @login_required
 def dashboard(request):
+    # Coleta os projetos reais do banco PostgreSQL
+    projetos_lista = Project.objects.all().order_by('-id')
+    
+    # Agrega os dados por status para alimentar o gráfico Donut lateral
     data = Project.objects.values('status').annotate(count=models.Count('id'))
-    return render(request, 'core/dashboard.html', {'data': data})
+    
+    context = {
+        'projetos_lista': projetos_lista,
+        'data': data
+    }
+    return render(request, 'core/dashboard.html', context)
 
 
 # ==============================================================================
-# 4. VIEW DE LISTAGEM DE USUÁRIOS E PERMISSÕES (PROTEGIDA POR LOGIN)
+# 3. VIEW DE LISTAGEM DE UTILIZADORES E PERMISSÕES
 # ==============================================================================
 @login_required
 def usuarios_view(request):
-    # Coleta todos os usuários cadastrados e ordena por primeiro nome
     usuarios = UsuarioNexus.objects.all().order_by('first_name')
     return render(request, 'core/usuarios.html', {'usuarios': usuarios})
 
 
 # ==============================================================================
-# 5. VIEWS DAS DEMAIS PÁGINAS INTERNAS (MANTIDAS E PROTEGIDAS)
+# 4. DEMAIS ABAS INTERNAS (EQUIPES, FINANÇAS, RELATÓRIOS)
 # ==============================================================================
 @login_required
 def equipes(request):
@@ -111,7 +83,7 @@ def relatorios(request):
 
 
 # ==============================================================================
-# 6. VIEW DE CONFIGURAÇÕES (APENAS ADMINISTRADORES LOGADOS)
+# 5. VIEW DE CONFIGURAÇÕES COM SUPORTE A LOGOUT
 # ==============================================================================
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -129,3 +101,32 @@ def configuracoes(request):
         return redirect('settings_page')
         
     return render(request, 'core/settings.html', {'config': config})
+
+
+# ==============================================================================
+# 6. RECUPERAÇÃO DE SENHA VISUAL
+# ==============================================================================
+class PasswordResetVisualView(PasswordResetView):
+    template_name = 'core/esqueci_senha.html'
+    
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email', '').strip()
+        users = UsuarioNexus.objects.filter(email__iexact=email)
+        
+        if not users.exists():
+            messages.error(request, f"O e-mail '{email}' não foi encontrado no banco de dados.")
+            return render(request, self.template_name, {'form': self.get_form()})
+            
+        context = {'email_digitado': email}
+        for user in users:
+            from django.utils.http import urlsafe_base64_encode
+            from django.utils.encoding import force_bytes
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = self.token_generator.make_token(user)
+            
+            domain = request.get_host()
+            protocol = 'https' if request.is_secure() else 'http'
+            context['link_seguro'] = f"{protocol}://{domain}/redefinir/{uid}/{token}/"
+            break
+            
+        return render(request, 'core/esqueci_senha_enviado.html', context)
