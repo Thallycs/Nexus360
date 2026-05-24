@@ -46,67 +46,87 @@
   <div class="panel" style="overflow: visible;">
     <div class="panel-header">
       <div class="panel-title">Todos os Projetos</div>
-      <button class="btn btn-primary btn-sm" onclick="abrirCriacao()" style="position: relative; z-index: 20; pointer-events: auto;">+ Novo Projeto</button>
+      <button class="btn btn-primary btn-sm" onclick="abrirCriacao()">+ Novo Projeto</button>
     </div>
     
-    <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; width: 100%; position: relative; z-index: 10;">
-      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()" style="flex: 1; min-width: 180px; pointer-events: auto;">
+    <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; width: 100%;">
+      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()" style="
+        flex: 1; 
+        min-width: 180px; 
+        background: rgba(255,255,255,0.04); 
+        border: 1px solid var(--border); 
+        border-radius: 5px; 
+        padding: 10px 14px; 
+        color: var(--white); 
+        font-family: 'Barlow', sans-serif; 
+        font-size: 13px; 
+        outline: none;
+        transition: border-color .2s;
+      "
+      onfocus="this.style.borderColor='var(--blue-bright)';"
+      onblur="this.style.borderColor='var(--border)';"
+      >
       
       <select class="filter-select" id="proj-filter-status" onchange="filtrarTabela()" style="
         background: rgba(255,255,255,0.04); 
         border: 1px solid var(--border); 
         border-radius: 5px; 
-        padding: 8px 12px; 
-        color: var(--white); 
+        padding: 10px 12px; 
+        color: var(--muted); 
         font-family: 'Barlow Condensed', sans-serif; 
         font-size: 11px; 
         letter-spacing: 1px; 
         text-transform: uppercase; 
         cursor: pointer;
-        pointer-events: auto;
+        outline: none;
+        height: 38px;
       ">
-        <option value="" style="background: var(--dark);">TODOS STATUS</option>
-        <option value="PLANEJAMENTO" style="background: var(--dark);">PLANEJAMENTO</option>
-        <option value="DESENVOLVIMENTO" style="background: var(--dark);">DESENVOLVIMENTO</option>
-        <option value="TESTES" style="background: var(--dark);">TESTES</option>
-        <option value="ENTREGUE" style="background: var(--dark);">ENTREGUE</option>
-        <option value="PAUSADO" style="background: var(--dark);">PAUSADO</option>
+        <option value="" style="background: var(--dark); color: var(--white);">TODOS STATUS</option>
+        <option value="PLANEJAMENTO" style="background: var(--dark); color: var(--white);">PLANEJAMENTO</option>
+        <option value="DESENVOLVIMENTO" style="background: var(--dark); color: var(--white);">DESENVOLVIMENTO</option>
+        <option value="TESTES" style="background: var(--dark); color: var(--white);">TESTES</option>
+        <option value="ENTREGUE" style="background: var(--dark); color: var(--white);">ENTREGUE</option>
+        <option value="PAUSADO" style="background: var(--dark); color: var(--white);">PAUSADO</option>
       </select>
       
       <select class="filter-select" id="proj-filter-priority" onchange="filtrarTabela()" style="
         background: rgba(255,255,255,0.04); 
         border: 1px solid var(--border); 
         border-radius: 5px; 
-        padding: 8px 12px; 
-        color: var(--white); 
+        padding: 10px 12px; 
+        color: var(--muted); 
         font-family: 'Barlow Condensed', sans-serif; 
         font-size: 11px; 
         letter-spacing: 1px; 
         text-transform: uppercase; 
         cursor: pointer;
-        pointer-events: auto;
+        outline: none;
+        height: 38px;
       ">
-        <option value="" style="background: var(--dark);">TODAS PRIORIDADES</option>
-        <option value="Alta" style="background: var(--dark);">Alta</option>
-        <option value="Média" style="background: var(--dark);">Média</option>
-        <option value="Baixa" style="background: var(--dark);">Baixa</option>
+        <option value="" style="background: var(--dark); color: var(--white);">TODAS PRIORIDADES</option>
+        <option value="Alta" style="background: var(--dark); color: var(--white);">Alta</option>
+        <option value="Média" style="background: var(--dark); color: var(--white);">Média</option>
+        <option value="Baixa" style="background: var(--dark); color: var(--white);">Baixa</option>
       </select>
     </div>
 
-    <div style="width: 100%; overflow-x: auto; padding: 12px 0; margin-top: 4px; position: relative; z-index: 1; pointer-events: auto; scrollbar-width: thin; scrollbar-color: var(--blue-bright) var(--dark);">
+    <div style="width: 100%; overflow-x: auto; padding: 12px 0; margin-top: 4px; position: relative; z-index: 1;" class="scroll-container">
       <style>
         div::-webkit-scrollbar { height: 6px; }
         div::-webkit-scrollbar-track { background: rgba(12, 17, 32, 0.5); border-radius: 4px; }
         div::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         div::-webkit-scrollbar-thumb:hover { background: var(--blue-bright); }
         
-        /* Força o alto relevo nativo a ignorar o isolamento do contêiner */
-        .project-table tbody tr { transition: all 0.2s ease-in-out !important; }
-        .project-table tbody tr:hover { background: rgba(56, 182, 255, 0.05) !important; transform: scale(1.005) translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        .btn-icon:hover { transform: scale(1.2); }
+        /* Efeito de Alto Relevo (Hover) idêntico ao original do Allan */
+        .project-table tbody tr { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .project-table tbody tr:hover { 
+          background: rgba(56, 182, 255, 0.04) !important; 
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(6, 8, 16, 0.6);
+        }
       </style>
 
-      <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 800px; border-collapse: collapse;">
+      <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 820px; border-collapse: collapse;">
         <thead>
           <tr>
             <th style="width: 35%;">Projeto</th>
@@ -159,97 +179,7 @@
   
   let editandoId = null;
 
-  function iniciarDashboard() {
-    renderizarTabela(projetos);
-    atualizarKpis(projetos);
-  }
-
-  function renderizarTabela(lista) {
-    const tbody = document.getElementById('corpo-tabela-projetos');
-    if (lista.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">NENHUM PROJETO ENCONTRADO.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = lista.map(p => {
-      let badgeCls = p.status === 'ENTREGUE' ? 'verde' : p.status === 'PAUSADO' ? 'cinza' : p.status === 'TESTES' ? 'laranja' : 'azul';
-      let labelStatus = p.status.charAt(0) + p.status.slice(1).toLowerCase();
-      
-      return `
-        <tr style="height: 75px;">
-          <td>
-            <div class="proj-name" style="font-size: 14px; font-weight: 500; color: var(--white);">${p.title}</div>
-            <div class="proj-client" style="font-size: 11px; color: var(--muted); margin-top: 2px;">Cliente: ${p.client || 'Nexus Interno'}</div>
-            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
-              ${p.desc || '<i>Sem descrição cadastrada.</i>'}
-            </div>
-          </td>
-          <td><span class="badge ${badgeCls}"><span class="badge-dot"></span>${labelStatus}</span></td>
-          <td>
-            <div class="progress-wrap" style="display: flex; align-items: center; gap: 10px;">
-              <div class="progress-bar" style="flex: 1; height: 4px; background: rgba(254,254,254,0.08); border-radius: 2px; overflow: hidden;">
-                <div class="progress-fill" style="width:${p.progress}%; height: 100%; background: var(--blue-bright); border-radius: 2px;"></div>
-              </div>
-              <span class="progress-pct blue" style="font-size: 11px; font-weight: 600; font-family: 'Barlow Condensed'; width: 28px; text-align: right;">${p.progress}%</span>
-            </div>
-          </td>
-          <td><span class="priority ${p.priority === 'Alta' ? 'alta' : p.priority === 'Média' ? 'media' : 'baixa'}">${p.priority}</span></td>
-          <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8; margin-left: 0; width: 24px; height: 24px; border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; color: #fff;">${p.owner}</div></div></td>
-          <td style="text-align: right; padding-right: 16px; vertical-align: middle;">
-            <div class="action-cell" style="display: flex; gap: 14px; justify-content: flex-end; align-items: center;">
-              <button class="btn-icon" onclick="abrirEdicao(${p.id})" title="Editar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">✏️</button>
-              <button class="btn-icon del" onclick="deletarProjeto(${p.id})" title="Apagar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">🗑️</button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  function atualizarKpis(lista) {
-    const total = lista.length;
-    const ativos = lista.filter(p => p.status === 'DESENVOLVIMENTO' || p.status === 'TESTES' || p.status === 'PLANEJAMENTO').length;
-    const entregues = lista.filter(p => p.status === 'ENTREGUE').length;
-    const somaProgresso = lista.reduce((acc, p) => acc + Number(p.progress), 0);
-    const media = total > 0 ? Math.round(somaProgresso / total) : 0;
-
-    document.getElementById('kpi-total').textContent = total;
-    document.getElementById('kpi-ativos').textContent = ativos;
-    document.getElementById('kpi-entregues').textContent = entregues;
-    document.getElementById('kpi-media').textContent = media + '%';
-    document.getElementById('donut-total').textContent = total;
-
-    const circle = document.getElementById('donut-segment-main');
-    if(circle) {
-      const c = 2 * Math.PI * 60;
-      const pctAtivos = total > 0 ? (ativos / total) : 0;
-      const dashArrayVal = pctAtivos * c;
-      circle.setAttribute('stroke-dasharray', `${dashArrayVal} ${c}`);
-    }
-
-    const legend = document.getElementById('donut-legend-list');
-    legend.innerHTML = `
-      <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Ativos</div><div class="legend-val">${ativos}</div></div>
-      <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--green)"></div>Entregues</div><div class="legend-val">${entregues}</div></div>
-    `;
-  }
-
-  function filtrarTabela() {
-    const busca = document.getElementById('proj-search').value.toLowerCase();
-    const fStatus = document.getElementById('proj-filter-status').value;
-    const fPriority = document.getElementById('proj-filter-priority').value;
-
-    let filtrados = projetos.filter(p => {
-      const matchBusca = p.title.toLowerCase().includes(busca) || p.client.toLowerCase().includes(busca) || (p.desc && p.desc.toLowerCase().includes(busca));
-      const matchStatus = fStatus === "" || p.status === fStatus;
-      const matchPriority = fPriority === "" || p.priority === fPriority;
-      return matchBusca && matchStatus && matchPriority;
-    });
-
-    renderizarTabela(filtrados);
-  }
-
-  function abrirCriacao() {
+  window.abrirCriacao = function() {
     editandoId = null;
     document.getElementById('proj-modal-title').textContent = 'Novo Projeto';
     document.getElementById('pf-title').value = '';
@@ -259,10 +189,10 @@
     document.getElementById('pf-priority').value = 'Alta';
     document.getElementById('pf-progress').value = 0;
     document.getElementById('pf-owner').value = '';
-    openModal();
-  }
+    if(typeof openModal === "function") openModal();
+  };
 
-  function abrirEdicao(id) {
+  window.abrirEdicao = function(id) {
     const p = projetos.find(x => x.id === id);
     if(!p) return;
     editandoId = id;
@@ -274,10 +204,10 @@
     document.getElementById('pf-priority').value = p.priority;
     document.getElementById('pf-progress').value = p.progress;
     document.getElementById('pf-owner').value = p.owner;
-    openModal();
-  }
+    if(typeof openModal === "function") openModal();
+  };
 
-  function salvarProjetoDoModal() {
+  window.salvarProjetoDoModal = function() {
     const title = document.getElementById('pf-title').value.trim();
     if(!title) return;
 
@@ -299,21 +229,115 @@
       projetos.push({ id: novoId, ...dados });
     }
 
-    closeModal();
+    if(typeof closeModal === "function") closeModal();
     iniciarDashboard();
-  }
+  };
 
-  function deletarProjeto(id) {
-    if(confirm("Tem certeza que deseja apagar este projeto?")) {
+  window.deletarProjeto = function(id) {
+    if(confirm("Deseja realmente remover este projeto permanentemente do Nexus 360?")) {
       projetos = projetos.filter(x => x.id !== id);
       iniciarDashboard();
     }
+  };
+
+  function renderizarTabela(lista) {
+    const tbody = document.getElementById('corpo-tabela-projetos');
+    if (!tbody) return;
+    
+    if (lista.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">NENHUM PROJETO ENCONTRADO.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = lista.map(p => {
+      let badgeCls = p.status === 'ENTREGUE' ? 'verde' : p.status === 'PAUSADO' ? 'cinza' : p.status === 'TESTES' ? 'laranja' : 'azul';
+      let labelStatus = p.status.charAt(0) + p.status.slice(1).toLowerCase();
+      
+      return `
+        <tr style="height: 75px; background: transparent;">
+          <td>
+            <div class="proj-name" style="font-size: 14px; font-weight: 500; color: var(--white);">${p.title}</div>
+            <div class="proj-client" style="font-size: 11px; color: var(--muted); margin-top: 2px;">Cliente: ${p.client || 'Nexus Interno'}</div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
+              ${p.desc || '<i>Sem descrição cadastrada.</i>'}
+            </div>
+          </td>
+          <td><span class="badge ${badgeCls}"><span class="badge-dot"></span>${labelStatus}</span></td>
+          <td>
+            <div class="progress-wrap" style="display: flex; align-items: center; gap: 10px;">
+              <div class="progress-bar" style="flex: 1; height: 4px; background: rgba(254,254,254,0.08); border-radius: 2px; overflow: hidden;">
+                <div class="progress-fill" style="width:${p.progress}%; height: 100%; background: var(--blue-bright); border-radius: 2px;"></div>
+              </div>
+              <span class="progress-pct blue" style="font-size: 11px; font-weight: 600; font-family: 'Barlow Condensed'; width: 28px; text-align: right;">${p.progress}%</span>
+            </div>
+          </td>
+          <td><span class="priority ${p.priority === 'Alta' ? 'alta' : p.priority === 'Média' ? 'media' : 'baixa'}">${p.priority}</span></td>
+          <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8; margin-left: 0; width: 24px; height: 24px; border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; color: #fff;">${p.owner}</div></div></td>
+          <td style="text-align: right; padding-right: 16px; vertical-align: middle;">
+            <div class="action-cell" style="display: flex; gap: 14px; justify-content: flex-end; align-items: center;">
+              <button class="btn-icon" onclick="window.abrirEdicao(${p.id})" title="Editar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">✏️</button>
+              <button class="btn-icon del" onclick="window.deletarProjeto(${p.id})" title="Apagar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
 
-  function filtrarTempo(tipo) {
+  function atualizarKpis(lista) {
+    const total = lista.length;
+    const ativos = lista.filter(p => p.status === 'DESENVOLVIMENTO' || p.status === 'TESTES' || p.status === 'PLANEJAMENTO').length;
+    const entregues = lista.filter(p => p.status === 'ENTREGUE').length;
+    const somaProgresso = lista.reduce((acc, p) => acc + Number(p.progress), 0);
+    const media = total > 0 ? Math.round(somaProgresso / total) : 0;
+
+    if(document.getElementById('kpi-total')) document.getElementById('kpi-total').textContent = total;
+    if(document.getElementById('kpi-ativos')) document.getElementById('kpi-ativos').textContent = ativos;
+    if(document.getElementById('kpi-entregues')) document.getElementById('kpi-entregues').textContent = entregues;
+    if(document.getElementById('kpi-media')) document.getElementById('kpi-media').textContent = media + '%';
+    if(document.getElementById('donut-total')) document.getElementById('donut-total').textContent = total;
+
+    const circle = document.getElementById('donut-segment-main');
+    if(circle) {
+      const c = 2 * Math.PI * 60;
+      const pctAtivos = total > 0 ? (ativos / total) : 0;
+      const dashArrayVal = pctAtivos * c;
+      circle.setAttribute('stroke-dasharray', `${dashArrayVal} ${c}`);
+    }
+
+    const legend = document.getElementById('donut-legend-list');
+    if(legend) {
+      legend.innerHTML = `
+        <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Ativos</div><div class="legend-val">${ativos}</div></div>
+        <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--green)"></div>Entregues</div><div class="legend-val">${entregues}</div></div>
+      `;
+    }
+  }
+
+  window.filtrarTabela = function() {
+    const busca = document.getElementById('proj-search').value.toLowerCase();
+    const fStatus = document.getElementById('proj-filter-status').value;
+    const fPriority = document.getElementById('proj-filter-priority').value;
+
+    let filtrados = projetos.filter(p => {
+      const matchBusca = p.title.toLowerCase().includes(busca) || p.client.toLowerCase().includes(busca) || (p.desc && p.desc.toLowerCase().includes(busca));
+      const matchStatus = fStatus === "" || p.status === fStatus;
+      const matchPriority = fPriority === "" || p.priority === fPriority;
+      return matchBusca && matchStatus && matchPriority;
+    });
+
+    renderizarTabela(filtrados);
+  };
+
+  function iniciarDashboard() {
+    renderizarTabela(projetos);
+    atualizarKpis(projetos);
+  }
+
+  window.filtrarTempo = function(tipo) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
-  }
+  };
 
   document.addEventListener("DOMContentLoaded", iniciarDashboard);
 </script>
