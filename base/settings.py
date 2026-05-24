@@ -166,3 +166,5 @@ STATICFILES_DIRS = [
 
 # Configuração para o WhiteNoise compactar e armazenar em cache o CSS de forma ultra rápida
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+AUTH_USER_MODEL = 'core.UsuarioNexus'
