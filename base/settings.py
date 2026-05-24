@@ -23,7 +23,7 @@ AUTH_USER_MODEL = 'core.UsuarioNexus'
 # Chave de segurança
 SECRET_KEY = 'django-insecure-5%+5v$$65dq^er(7eev=jwmq!wera_k9j5%gr+-mp2vuco2zzw'
 
-# Modo Debug (Aviso: mude para False antes de colocar o sistema em ambiente de produção final)
+# Modo Debug (Aviso: mude para False antes de colocar o sistema em produção final)
 DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -139,7 +139,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Coleta as chaves configuradas na aba "Environment" do seu painel do Render
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# Coleta com segurança as chaves configuradas na aba "Environment" do seu painel do Render
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='talita.eng.comp@gmail.com')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+
+# CORREÇÃO: Diretrizes explícitas de remetente exigidas para servidores de produção Linux
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
