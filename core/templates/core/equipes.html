@@ -1,30 +1,159 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="title-bar">
-  <div>
-    <div class="page-title">Divisão de <span>Equipes</span></div>
-    <div class="page-subtitle">Gerenciamento de Capital Humano e Engenharia</div>
+<div style="padding: 0 40px;">
+  
+  <div class="title-bar" style="padding: 10px 0 24px;">
+    <div>
+      <div class="page-title">Gestão de <span>Equipes</span></div>
+      <div class="page-subtitle">Membros, funções e desempenho corporativo</div>
+    </div>
   </div>
-</div>
 
-<div class="panel">
-  <div class="panel-header">
-    <div class="panel-title">Squads Ativos</div>
+  <div class="kpi-strip" style="padding: 0; margin-bottom: 24px;">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Total de Colaboradores</div>
+      <div class="kpi-value">6</div>
+      <div class="kpi-delta up">▲ Integrados ao banco</div>
+      <div class="kpi-bg-icon">👥</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Membros Ativos</div>
+      <div class="kpi-value">5</div>
+      <div class="kpi-delta up">Em operação agora</div>
+      <div class="kpi-bg-icon">✅</div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-label">Eficiência Média</div>
+      <div class="kpi-value">93%</div>
+      <div class="kpi-delta up">▲ Alta produtividade</div>
+      <div class="kpi-bg-icon">⚡</div>
+    </div>
+    <div class="kpi-card navy">
+      <div class="kpi-label">Tarefas Totais</div>
+      <div class="kpi-value">230</div>
+      <div class="kpi-delta up">Concluídas no período</div>
+      <div class="kpi-bg-icon">📋</div>
+    </div>
   </div>
-  <ul class="custom-list">
-    <li class="list-item success">
-      <div><strong>Core Engineering Squad</strong> (3 Integrantes)</div>
-      <div style="color:var(--muted); font-size:12px;">Foco: Desenvolvimento de Soluções Críticas</div>
-    </li>
-    <li class="list-item success">
-      <div><strong>DevOps & Infrastructure Team</strong> (2 Integrantes)</div>
-      <div style="color:var(--muted); font-size:12px;">Foco: Cloud Computing e Ambientes Resilientes</div>
-    </li>
-    <li class="list-item warning">
-      <div><strong>Data Science & Analytics</strong> (1 Integrante)</div>
-      <div style="color:var(--muted); font-size:12px;">Foco: Modelagem de Dados e IA</div>
-    </li>
-  </ul>
+
+  <div class="panel" style="margin-bottom: 24px;">
+    <div class="panel-header">
+      <div class="panel-title">Membros da Equipe & Squads Ativos</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px; margin-top:8px">
+      
+      <div class="member-card" style="background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 24px; position: relative;">
+        <div class="member-top" style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px;">
+          <div class="member-avatar" style="width: 48px; height: 48px; border-radius: 50%; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--blue-bright); background: #3b82f6; color: #fff;">RM</div>
+          <div class="member-info">
+            <div class="member-name" style="font-size: 15px; font-weight: 600; color: var(--white);">Rafaela Mendes</div>
+            <div class="member-role" style="font-family: 'Barlow Condensed'; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted);">Tech Lead</div>
+            <div style="margin-top:6px"><span class="badge verde"><span class="badge-dot"></span>● Ativo</span></div>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); margin-bottom:12px; font-family:'Barlow Condensed'; letter-spacing:1px; text-transform:uppercase">
+          Desenvolvimento · r.mendes@nexus360.com
+        </div>
+        <div class="member-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">3</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Projetos</div></div>
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">47</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Tarefas</div></div>
+          <div class="stat-item" style="grid-column:1/-1">
+            <div style="display:flex; align-items:center; gap:8px; margin-top:4px">
+              <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden">
+                <div style="width:94%; height:100%; background:var(--green); border-radius:2px"></div>
+              </div>
+              <span style="font-family:'Barlow Condensed'; font-size:13px; font-weight:700; color:var(--green)">94%</span>
+            </div>
+            <div class="stat-label" style="margin-top:3px; font-size:10px; text-transform:uppercase; color:var(--muted);">Eficiência (Core Squad)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="member-card" style="background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 24px; position: relative;">
+        <div class="member-top" style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px;">
+          <div class="member-avatar" style="width: 48px; height: 48px; border-radius: 50%; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--blue-bright); background: #8b5cf6; color: #fff;">KL</div>
+          <div class="member-info">
+            <div class="member-name" style="font-size: 15px; font-weight: 600; color: var(--white);">Karen Lima</div>
+            <div class="member-role" style="font-family: 'Barlow Condensed'; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted);">Project Manager</div>
+            <div style="margin-top:6px"><span class="badge verde"><span class="badge-dot"></span>● Ativo</span></div>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); margin-bottom:12px; font-family:'Barlow Condensed'; letter-spacing:1px; text-transform:uppercase">
+          Gestão · k.lima@nexus360.com
+        </div>
+        <div class="member-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">4</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Projetos</div></div>
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">62</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Tarefas</div></div>
+          <div class="stat-item" style="grid-column:1/-1">
+            <div style="display:flex; align-items:center; gap:8px; margin-top:4px">
+              <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden">
+                <div style="width:97%; height:100%; background:var(--green); border-radius:2px"></div>
+              </div>
+              <span style="font-family:'Barlow Condensed'; font-size:13px; font-weight:700; color:var(--green)">97%</span>
+            </div>
+            <div class="stat-label" style="margin-top:3px; font-size:10px; text-transform:uppercase; color:var(--muted);">Eficiência Global</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="member-card" style="background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 24px; position: relative;">
+        <div class="member-top" style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px;">
+          <div class="member-avatar" style="width: 48px; height: 48px; border-radius: 50%; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--blue-bright); background: #10b981; color: #fff;">AN</div>
+          <div class="member-info">
+            <div class="member-name" style="font-size: 15px; font-weight: 600; color: var(--white);">André Neves</div>
+            <div class="member-role" style="font-family: 'Barlow Condensed'; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted);">DevOps Engineer</div>
+            <div style="margin-top:6px"><span class="badge verde"><span class="badge-dot"></span>● Ativo</span></div>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); margin-bottom:12px; font-family:'Barlow Condensed'; letter-spacing:1px; text-transform:uppercase">
+          Infraestrutura · a.neves@nexus360.com
+        </div>
+        <div class="member-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">2</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Projetos</div></div>
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">29</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Tarefas</div></div>
+          <div class="stat-item" style="grid-column:1/-1">
+            <div style="display:flex; align-items:center; gap:8px; margin-top:4px">
+              <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden">
+                <div style="width:91%; height:100%; background:var(--blue-bright); border-radius:2px"></div>
+              </div>
+              <span style="font-family:'Barlow Condensed'; font-size:13px; font-weight:700; color:var(--blue-bright)">91%</span>
+            </div>
+            <div class="stat-label" style="margin-top:3px; font-size:10px; text-transform:uppercase; color:var(--muted);">Eficiência (Infra Squad)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="member-card" style="background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 24px; position: relative;">
+        <div class="member-top" style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px;">
+          <div class="member-avatar" style="width: 48px; height: 48px; border-radius: 50%; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--blue-bright); background: #f59e0b; color: #fff;">MR</div>
+          <div class="member-info">
+            <div class="member-name" style="font-size: 15px; font-weight: 600; color: var(--white);">Marcos Rocha</div>
+            <div class="member-role" style="font-family: 'Barlow Condensed'; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted);">Data Analyst</div>
+            <div style="margin-top:6px"><span class="badge amarelo"><span class="badge-dot"></span>● Alocado</span></div>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); margin-bottom:12px; font-family:'Barlow Condensed'; letter-spacing:1px; text-transform:uppercase">
+          Dados · m.rocha@nexus360.com
+        </div>
+        <div class="member-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">2</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Projetos</div></div>
+          <div class="stat-item"><div class="stat-val" style="font-family:'Barlow Condensed'; font-size:20px; font-weight:700;">33</div><div class="stat-label" style="font-size:10px; text-transform:uppercase; color:var(--muted);">Tarefas</div></div>
+          <div class="stat-item" style="grid-column:1/-1">
+            <div style="display:flex; align-items:center; gap:8px; margin-top:4px">
+              <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden">
+                <div style="width:89%; height:100%; background:var(--orange); border-radius:2px"></div>
+              </div>
+              <span style="font-family:'Barlow Condensed'; font-size:13px; font-weight:700; color:var(--orange)">89%</span>
+            </div>
+            <div class="stat-label" style="margin-top:3px; font-size:10px; text-transform:uppercase; color:var(--muted);">Eficiência (Data Squad)</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 {% endblock %}
