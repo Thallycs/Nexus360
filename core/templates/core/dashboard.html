@@ -2,9 +2,8 @@
 {% load static %}
 {% block content %}
 
-<!-- CONFIGURAÇÃO EXCLUSIVA DE ALTO RELEVO PARA TODOS OS QUADRADOS -->
 <style>
-  /* 1. Transição fluida e suave para todos os painéis e elementos reativos */
+  /* Define a transição suave para os elementos reativos */
   .kpi-card, .panel, .project-table tbody tr, .btn, .btn-icon, .filter-btn {
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
                 box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
@@ -12,66 +11,45 @@
                 background-color 0.25s ease !important;
   }
 
-  /* 2. Alto Relevo nos 4 Cards de KPI Superiores com Sombra Brilhante */
+  /* Alto Relevo nos 4 Cards de KPI Superiores */
   .kpi-card:hover {
     transform: translateY(-6px) scale(1.01);
   }
-  .kpi-card.blue:hover {
-    box-shadow: 0 10px 24px rgba(56, 182, 255, 0.22);
-    border-color: rgba(56, 182, 255, 0.5);
-  }
-  .kpi-card.green:hover {
-    box-shadow: 0 10px 24px rgba(34, 197, 94, 0.22);
-    border-color: rgba(34, 197, 94, 0.5);
-  }
-  .kpi-card.orange:hover {
-    box-shadow: 0 10px 24px rgba(249, 115, 22, 0.22);
-    border-color: rgba(249, 115, 22, 0.5);
-  }
-  .kpi-card.navy:hover {
-    box-shadow: 0 10px 24px rgba(30, 126, 200, 0.2);
-    border-color: rgba(30, 126, 200, 0.5);
-  }
+  .kpi-card.blue:hover { box-shadow: 0 10px 24px rgba(56, 182, 255, 0.22); border-color: rgba(56, 182, 255, 0.5); }
+  .kpi-card.green:hover { box-shadow: 0 10px 24px rgba(34, 197, 94, 0.22); border-color: rgba(34, 197, 94, 0.5); }
+  .kpi-card.orange:hover { box-shadow: 0 10px 24px rgba(249, 115, 22, 0.22); border-color: rgba(249, 115, 22, 0.5); }
+  .kpi-card.navy:hover { box-shadow: 0 10px 24px rgba(30, 126, 200, 0.2); border-color: rgba(30, 126, 200, 0.5); }
 
-  /* 3. Alto Relevo nos Quadrados Maiores (Painel da Tabela e Painel da Distribuição) */
+  /* Alto Relevo nos Quadrados Maiores (Tabela de Projetos e Painel do Donut) */
   .panel:hover {
     transform: translateY(-4px);
     border-color: rgba(56, 182, 255, 0.3);
     box-shadow: 0 16px 36px rgba(6, 8, 16, 0.85), 0 4px 16px rgba(56, 182, 255, 0.08);
   }
 
-  /* 4. Realce Suave nas Linhas e nos Botões de Ação ao interagir */
-  .project-table tbody tr:hover {
-    background: rgba(56, 182, 255, 0.04) !important;
-  }
-  .btn-icon:hover {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 6px var(--blue-bright));
-  }
-  .btn-icon.del:hover {
-    filter: drop-shadow(0 0 6px var(--red)) !important;
-  }
+  .project-table tbody tr:hover { background: rgba(56, 182, 255, 0.04) !important; }
+  .btn-icon:hover { transform: scale(1.2); filter: drop-shadow(0 0 6px var(--blue-bright)); }
+  .btn-icon.del:hover { filter: drop-shadow(0 0 6px var(--red)) !important; }
 </style>
 
-<!-- TITLE BAR -->
 <div class="title-bar">
   <div>
     <div class="page-title">Gestão de <span>Projetos</span></div>
     <div class="page-subtitle">Controle Operacional Completo</div>
   </div>
   <div class="filter-bar">
-    <button class="filter-btn active" onclick="filtrarTempo('hoje')">Hoje</button>
-    <button class="filter-btn" onclick="filtrarTempo('semana')">Semana</button>
-    <button class="filter-btn" onclick="filtrarTempo('mes')">Mês</button>
+    <button class="filter-btn active" id="btn-filtro-hoje" onclick="filtrarTempo('hoje')">Hoje</button>
+    <button class="filter-btn" id="btn-filtro-semana" onclick="filtrarTempo('semana')">Semana</button>
+    <button class="filter-btn" id="btn-filtro-mes" onclick="filtrarTempo('mes')">Mês</button>
+    <button class="filter-btn" id="btn-filtro-todos" onclick="filtrarTempo('todos')">Todos</button>
   </div>
 </div>
 
-<!-- KPI STRIP OPERACIONAL SINCRONIZADO -->
 <div class="kpi-strip">
   <div class="kpi-card blue">
-    <div class="kpi-label">Projetos Cadastrados</div>
+    <div class="kpi-label">Projetos Exibidos</div>
     <div class="kpi-value" id="kpi-total">0</div>
-    <div class="kpi-delta up">▲ Total no sistema</div>
+    <div class="kpi-delta up" id="kpi-delta-txt">▲ No período filtrado</div>
     <div class="kpi-bg-icon">📁</div>
   </div>
   <div class="kpi-card green">
@@ -89,49 +67,26 @@
   <div class="kpi-card navy">
     <div class="kpi-label">Média Progresso</div>
     <div class="kpi-value" id="kpi-media">0%</div>
-    <div class="kpi-delta up">▲ Performance geral</div>
+    <div class="kpi-delta up">▲ Performance do grupo</div>
     <div class="kpi-bg-icon">📈</div>
   </div>
 </div>
 
-<!-- MAIN GRID -->
 <div class="main-grid">
 
-  <!-- TABLE PANEL -->
   <div class="panel" style="overflow: visible;">
     <div class="panel-header">
-      <div class="panel-title">Todos os Projetos</div>
+      <div class="panel-title" id="tabela-titulo-contexto">Todos os Projetos</div>
       <button class="btn btn-primary btn-sm" onclick="window.abrirCriacao()">+ Novo Projeto</button>
     </div>
     
-    <!-- TOOLBAR DE BUSCA -->
     <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; width: 100%;">
       <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="window.filtrarTabela()" style="
-        flex: 1; 
-        min-width: 180px; 
-        background: rgba(255,255,255,0.04); 
-        border: 1px solid var(--border); 
-        border-radius: 5px; 
-        padding: 10px 14px; 
-        color: var(--white); 
-        font-family: 'Barlow', sans-serif; 
-        font-size: 13px; 
-        outline: none;
+        flex: 1; min-width: 180px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 10px 14px; color: var(--white); font-family: 'Barlow', sans-serif; font-size: 13px; outline: none;
       ">
       
       <select class="filter-select" id="proj-filter-status" onchange="window.filtrarTabela()" style="
-        background: rgba(255,255,255,0.04); 
-        border: 1px solid var(--border); 
-        border-radius: 5px; 
-        padding: 8px 12px; 
-        color: var(--white); 
-        font-family: 'Barlow Condensed', sans-serif; 
-        font-size: 11px; 
-        letter-spacing: 1px; 
-        text-transform: uppercase; 
-        cursor: pointer;
-        outline: none;
-        height: 38px;
+        background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 8px 12px; color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; outline: none; height: 38px;
       ">
         <option value="">TODOS STATUS</option>
         <option value="PLANEJAMENTO">PLANEJAMENTO</option>
@@ -142,18 +97,7 @@
       </select>
       
       <select class="filter-select" id="proj-filter-priority" onchange="window.filtrarTabela()" style="
-        background: rgba(255,255,255,0.04); 
-        border: 1px solid var(--border); 
-        border-radius: 5px; 
-        padding: 8px 12px; 
-        color: var(--white); 
-        font-family: 'Barlow Condensed', sans-serif; 
-        font-size: 11px; 
-        letter-spacing: 1px; 
-        text-transform: uppercase; 
-        cursor: pointer;
-        outline: none;
-        height: 38px;
+        background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 8px 12px; color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; outline: none; height: 38px;
       ">
         <option value="">TODAS PRIORIDADES</option>
         <option value="Alta">Alta</option>
@@ -162,27 +106,24 @@
       </select>
     </div>
 
-    <!-- CONTÊINER DE SCROLL -->
     <div style="width: 100%; overflow-x: auto; padding: 4px 0; margin-top: 4px; position: relative; z-index: 1;">
       <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 820px; border-collapse: collapse;">
         <thead>
           <tr>
-            <th style="width: 35%;">Projeto</th>
+            <th style="width: 32%;">Projeto</th>
             <th style="width: 15%;">Status</th>
-            <th style="width: 20%;">Progresso</th>
+            <th style="width: 18%;">Progresso</th>
             <th style="width: 12%;">Prioridade</th>
-            <th style="width: 10%;">Equipe</th>
-            <th style="width: 8%; text-align: right; padding-right: 16px;">Ações</th>
+            <th style="width: 13%;">Previsão</th>
+            <th style="width: 10%; text-align: right; padding-right: 16px;">Ações</th>
           </tr>
         </thead>
         <tbody id="corpo-tabela-projetos">
-          <!-- Injeção via JS -->
-        </tbody>
+          </tbody>
       </table>
     </div>
   </div>
 
-  <!-- SIDEBAR COM GRÁFICO DONUT TOTALMENTE SINCRONIZADO -->
   <div class="sidebar">
     <div class="panel">
       <div class="panel-header">
@@ -204,26 +145,35 @@
           <div class="label">Projetos</div>
         </div>
         <div class="donut-legend" id="donut-legend-list">
-          <!-- Injeção sincronizada de status reais -->
-        </div>
+          </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MOTOR DE INSTANCIAÇÃO E EVENTOS DO CRUD -->
 <script>
+  // Base de dados simulada incluindo campos de data para cruzamento com o calendário
   let projetos = [
-    { id: 1, title: 'Sistema ERP Industrial', client: 'Metalúrgica Fortex', desc: 'Implantação completa do ERP com módulos de produção e estoque.', status: 'DESENVOLVIMENTO', progress: 72, priority: 'Alta', owner: 'RM' },
-    { id: 2, title: 'Portal Logístico B2B', client: 'Grupo TransLog', desc: 'Portal de pedidos e rastreamento para clientes B2B.', status: 'ENTREGUE', progress: 100, priority: 'Média', owner: 'AN' },
-    { id: 3, title: 'Automação de Relatórios', client: 'Banco Meridian', desc: 'Pipeline de generation automática de relatórios regulatórios.', status: 'TESTES', progress: 38, priority: 'Alta', owner: 'PS' }
+    { id: 1, title: 'Sistema ERP Industrial', client: 'Metalúrgica Fortex', desc: 'Implantação completa do ERP com módulos de produção e estoque.', status: 'DESENVOLVIMENTO', progress: 72, priority: 'Alta', owner: 'RM', end: '2026-05-24' },
+    { id: 2, title: 'Portal Logístico B2B', client: 'Grupo TransLog', desc: 'Portal de pedidos e rastreamento para clientes B2B.', status: 'ENTREGUE', progress: 100, priority: 'Média', owner: 'AN', end: '2026-05-28' },
+    { id: 3, title: 'Automação de Relatórios', client: 'Banco Meridian', desc: 'Pipeline de geração automática de relatórios regulatórios.', status: 'TESTES', progress: 38, priority: 'Alta', owner: 'PS', end: '2026-06-15' }
   ];
   
+  let filtroCalendarioAtual = 'todos'; 
   let editandoId = null;
 
+  // Data base fixada no contexto operacional da plataforma (24 de Maio de 2026)
+  const DATA_HOJE = new Date('2026-05-24T12:00:00');
+
   function iniciarDashboard() {
-    renderizarTabela(projetos);
-    atualizarKpis(projetos);
+    filtrarTabela();
+  }
+
+  function fmtDateBR(stringData) {
+    if(!stringData) return '—';
+    const partes = stringData.split('-');
+    if(partes.length !== 3) return stringData;
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
   }
 
   function renderizarTabela(lista) {
@@ -231,7 +181,7 @@
     if (!tbody) return;
     
     if (lista.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">NENHUM PROJETO ENCONTRADO.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">NENHUM PROJETO CORRESPONDENTE NESTE PERÍODO.</td></tr>`;
       return;
     }
 
@@ -258,7 +208,7 @@
             </div>
           </td>
           <td><span class="priority ${p.priority === 'Alta' ? 'alta' : p.priority === 'Média' ? 'media' : 'baixa'}">${p.priority}</span></td>
-          <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8; margin-left: 0; width: 24px; height: 24px; border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; color: #fff;">${p.owner}</div></div></td>
+          <td style="font-size: 12px; color: var(--muted); font-family: 'Barlow Condensed'; letter-spacing: 0.5px;">${fmtDateBR(p.end)}</td>
           <td style="text-align: right; padding-right: 16px; vertical-align: middle;">
             <div class="action-cell" style="display: flex; gap: 14px; justify-content: flex-end; align-items: center;">
               <button class="btn-icon" onclick="window.abrirEdicao(${p.id})" title="Editar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">✏️</button>
@@ -270,13 +220,13 @@
     }).join('');
   }
 
-  function atualizarKpis(lista) {
-    const total = lista.length;
-    const ativos = lista.filter(p => p.status === 'DESENVOLVIMENTO' || p.status === 'TESTES' || p.status === 'PLANEJAMENTO').length;
-    const entregues = lista.filter(p => p.status === 'ENTREGUE').length;
-    const pausados = lista.filter(p => p.status === 'PAUSADO').length;
+  function atualizarKpis(listaFiltrada) {
+    const total = listaFiltrada.length;
+    const ativos = listaFiltrada.filter(p => p.status === 'DESENVOLVIMENTO' || p.status === 'TESTES' || p.status === 'PLANEJAMENTO').length;
+    const entregues = listaFiltrada.filter(p => p.status === 'ENTREGUE').length;
+    const pausados = listaFiltrada.filter(p => p.status === 'PAUSADO').length;
     
-    const somaProgresso = lista.reduce((acc, p) => acc + Number(p.progress), 0);
+    const somaProgresso = listaFiltrada.reduce((acc, p) => acc + Number(p.progress), 0);
     const media = total > 0 ? Math.round(somaProgresso / total) : 0;
 
     if(document.getElementById('kpi-total')) document.getElementById('kpi-total').textContent = total;
@@ -296,12 +246,64 @@
     const legend = document.getElementById('donut-legend-list');
     if(legend) {
       legend.innerHTML = `
-        <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Em Andamento</div><div class="legend-val">${ativos}</div></div>
+        <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Ativos</div><div class="legend-val">${ativos}</div></div>
         <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--green)"></div>Concluídos</div><div class="legend-val">${entregues}</div></div>
         <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--muted)"></div>Pausados</div><div class="legend-val">${pausados}</div></div>
       `;
     }
   }
+
+  // Intercepta e filtra os registros baseado nas inputs de texto, seletores e no prazo do calendário ativo
+  window.filtrarTabela = function() {
+    const busca = document.getElementById('proj-search').value.toLowerCase();
+    const fStatus = document.getElementById('proj-filter-status').value;
+    const fPriority = document.getElementById('proj-filter-priority').value;
+
+    let filtrados = projetos.filter(p => {
+      const matchBusca = p.title.toLowerCase().includes(busca) || p.client.toLowerCase().includes(busca) || (p.desc && p.desc.toLowerCase().includes(busca));
+      const matchStatus = fStatus === "" || p.status === fStatus;
+      const matchPriority = fPriority === "" || p.priority === fPriority;
+      
+      // Validação das janelas de tempo do calendário baseado na data de previsão (end)
+      let matchCalendario = true;
+      if (p.end) {
+        const dataProjeto = new Date(p.end + 'T00:00:00');
+        const diffTempo = dataProjeto - DATA_HOJE;
+        const diffDias = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
+
+        if (filtroCalendarioAtual === 'hoje') {
+          matchCalendario = (dataProjeto.toDateString() === DATA_HOJE.toDateString());
+        } else if (filtroCalendarioAtual === 'semana') {
+          matchCalendario = (diffDias >= 0 && diffDias <= 7);
+        } else if (filtroCalendarioAtual === 'mes') {
+          matchCalendario = (diffDias >= 0 && diffDias <= 30);
+        }
+      } else if (filtroCalendarioAtual !== 'todos') {
+        matchCalendario = false;
+      }
+
+      return matchBusca && matchStatus && matchPriority && matchCalendario;
+    });
+
+    renderizarTabela(filtrados);
+    atualizarKpis(filtrados);
+  };
+
+  // Altera a janela do calendário ativo e sincroniza as classes CSS ativas
+  window.filtrarTempo = function(tipo) {
+    filtroCalendarioAtual = tipo;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    
+    if(tipo === 'hoje') document.getElementById('btn-filtro-hoje').classList.add('active');
+    else if(tipo === 'semana') document.getElementById('btn-filtro-semana').classList.add('active');
+    else if(tipo === 'mes') document.getElementById('btn-filtro-mes').classList.add('active');
+    else document.getElementById('btn-filtro-todos').classList.add('active');
+
+    const titulos = { hoje: 'Previsões para Hoje', semana: 'Entregas da Semana', mes: 'Entregas do Mês', todos: 'Todos os Projetos' };
+    document.getElementById('tabela-titulo-contexto').textContent = titulos[tipo];
+    
+    filtrarTabela();
+  };
 
   window.abrirCriacao = function() {
     editandoId = null;
@@ -335,6 +337,10 @@
     const title = document.getElementById('pf-title').value.trim();
     if(!title) return;
 
+    // Se for um novo registro sem data de término explícita, calcula um prazo automático de 4 dias para testes estáveis
+    const pExistente = projetos.find(x => x.id === editandoId);
+    let dataFinal = pExistente ? pExistente.end : new Date(DATA_HOJE.getTime() + (4 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+
     const dados = {
       title: title,
       client: document.getElementById('pf-client').value.trim(),
@@ -342,7 +348,8 @@
       status: document.getElementById('pf-status').value,
       priority: document.getElementById('pf-priority').value,
       progress: Number(document.getElementById('pf-progress').value) || 0,
-      owner: document.getElementById('pf-owner').value.trim().toUpperCase() || 'NX'
+      owner: document.getElementById('pf-owner').value.trim().toUpperCase() || 'NX',
+      end: dataFinal
     };
 
     if (editandoId !== null) {
@@ -354,34 +361,14 @@
     }
 
     if(typeof closeModal === "function") closeModal();
-    iniciarDashboard();
+    filtrarTabela();
   };
 
   window.deletarProjeto = function(id) {
     if(confirm("Deseja realmente remover este projeto permanentemente do Nexus 360?")) {
       projetos = projetos.filter(x => x.id !== id);
-      iniciarDashboard();
+      filtrarTabela();
     }
-  };
-
-  window.filtrarTabela = function() {
-    const busca = document.getElementById('proj-search').value.toLowerCase();
-    const fStatus = document.getElementById('proj-filter-status').value;
-    const fPriority = document.getElementById('proj-filter-priority').value;
-
-    let filtrados = projetos.filter(p => {
-      const matchBusca = p.title.toLowerCase().includes(busca) || p.client.toLowerCase().includes(busca) || (p.desc && p.desc.toLowerCase().includes(busca));
-      const matchStatus = fStatus === "" || p.status === fStatus;
-      const matchPriority = fPriority === "" || p.priority === fPriority;
-      return matchBusca && matchStatus && matchPriority;
-    });
-
-    renderizarTabela(filtrados);
-  };
-
-  window.filtrarTempo = function(tipo) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
   };
 
   document.addEventListener("DOMContentLoaded", iniciarDashboard);
