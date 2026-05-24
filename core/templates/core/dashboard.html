@@ -1,3 +1,135 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- TITLE BAR -->
+<div class="title-bar">
+  <div>
+    <div class="page-title">Gestão de <span>Projetos</span></div>
+    <div class="page-subtitle">Controle Operacional Completo</div>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filtrarTempo('hoje')">Hoje</button>
+    <button class="filter-btn" onclick="filtrarTempo('semana')">Semana</button>
+    <button class="filter-btn" onclick="filtrarTempo('mes')">Mês</button>
+  </div>
+</div>
+
+<!-- KPI STRIP OPERACIONAL -->
+<div class="kpi-strip">
+  <div class="kpi-card blue">
+    <div class="kpi-label">Projetos Cadastrados</div>
+    <div class="kpi-value" id="kpi-total">0</div>
+    <div class="kpi-delta up">▲ Total no sistema</div>
+    <div class="kpi-bg-icon">📁</div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-label">Ativos</div>
+    <div class="kpi-value" id="kpi-ativos">0</div>
+    <div class="kpi-delta up">Em desenvolvimento/testes</div>
+    <div class="kpi-bg-icon">⚙️</div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="kpi-label">Entregues</div>
+    <div class="kpi-value" id="kpi-entregues">0</div>
+    <div class="kpi-delta up">✓ Conclusão homologada</div>
+    <div class="kpi-bg-icon">✅</div>
+  </div>
+  <div class="kpi-card navy">
+    <div class="kpi-label">Média Progresso</div>
+    <div class="kpi-value" id="kpi-media">0%</div>
+    <div class="kpi-delta up">▲ Performance geral</div>
+    <div class="kpi-bg-icon">📈</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+
+  <!-- TABLE PANEL -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Todos os Projetos</div>
+      <button class="btn btn-primary btn-sm" onclick="abrirCriacao()">+ Novo Projeto</button>
+    </div>
+    
+    <!-- TOOLBAR DE BUSCA E FILTRAGEM -->
+    <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 20px;">
+      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()">
+      <select class="filter-select" id="proj-filter-status" onchange="filtrarTabela()">
+        <option value="">TODOS STATUS</option>
+        <option value="PLANEJAMENTO">PLANEJAMENTO</option>
+        <option value="DESENVOLVIMENTO">DESENVOLVIMENTO</option>
+        <option value="TESTES">TESTES</option>
+        <option value="ENTREGUE">ENTREGUE</option>
+        <option value="PAUSADO">PAUSADO</option>
+      </select>
+      <select class="filter-select" id="proj-filter-priority" onchange="filtrarTabela()">
+        <option value="">TODAS PRIORIDADES</option>
+        <option value="Alta">Alta</option>
+        <option value="Média">Média</option>
+        <option value="Baixa">Baixa</option>
+      </select>
+    </div>
+
+    <!-- CONTÊINER DO SCROLL COM ESTILIZAÇÃO NEON EM MINHA PROPRIEDADE -->
+    <div style="width: 100%; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: var(--blue-bright) var(--dark);">
+      <style>
+        /* Estilização customizada da barra de rolagem para navegadores Webkit (Chrome, Edge, Safari) */
+        div::-webkit-scrollbar { height: 6px; }
+        div::-webkit-scrollbar-track { background: rgba(12, 17, 32, 0.5); border-radius: 4px; }
+        div::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; border: 1px solid rgba(56, 182, 255, 0.2); }
+        div::-webkit-scrollbar-thumb:hover { background: var(--blue-bright); box-shadow: 0 0 10px var(--blue-bright); }
+      </style>
+
+      <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 650px;">
+        <thead>
+          <tr>
+            <th>Projeto</th>
+            <th>Status</th>
+            <th>Progresso</th>
+            <th>Prioridade</th>
+            <th>Equipe</th>
+            <th style="text-align: right; padding-right: 16px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="corpo-tabela-projetos">
+          <!-- Injeção reativa via Javascript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SIDEBAR COM GRÁFICO DONUT -->
+  <div class="sidebar">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Distribuição</div>
+      </div>
+      <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(56,182,255,0.08)" stroke-width="20"/>
+          <circle cx="80" cy="80" r="60" fill="none" stroke="url(#dg1)" stroke-width="20" id="donut-segment-main" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="dg1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#38b6ff"/>
+              <stop offset="100%" stop-color="#2dd4bf"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="donut-center">
+          <div class="big-num" id="donut-total">0</div>
+          <div class="label">Projetos</div>
+        </div>
+        <div class="donut-legend" id="donut-legend-list">
+          <!-- Injeção automática de legenda -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOTOR DO CRUD INTERNO -->
 <script>
   let projetos = [
     { id: 1, title: 'Sistema ERP Industrial', client: 'Metalúrgica Fortex', desc: 'Implantação completa do ERP com módulos de produção e estoque.', status: 'DESENVOLVIMENTO', progress: 72, priority: 'Alta', owner: 'RM' },
@@ -28,8 +160,7 @@
           <td>
             <div class="proj-name">${p.title}</div>
             <div class="proj-client">Cliente: ${p.client || 'Nexus Interno'}</div>
-            <!-- LINHA DE DESCRIÇÃO COMPORTADA LOGO ABAIXO DO NOME -->
-            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
               ${p.desc || '<i>Sem descrição cadastrada.</i>'}
             </div>
           </td>
@@ -41,11 +172,11 @@
             </div>
           </td>
           <td><span class="priority ${p.priority === 'Alta' ? 'alta' : p.priority === 'Média' ? 'media' : 'baixa'}">${p.priority}</span></td>
-          <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8">${p.owner}</div></div></td>
-          <td>
-            <div class="action-cell">
-              <button class="btn-icon" onclick="abrirEdicao(${p.id})">✏️</button>
-              <button class="btn-icon del" onclick="deletarProjeto(${p.id})">🗑️</button>
+          <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8; margin-left: 0;">${p.owner}</div></div></td>
+          <td style="text-align: right; padding-right: 16px;">
+            <div class="action-cell" style="justify-content: flex-end; gap: 8px;">
+              <button class="btn-icon" onclick="abrirEdicao(${p.id})" title="Editar projeto" style="font-size: 14px;">✏️</button>
+              <button class="btn-icon del" onclick="deletarProjeto(${p.id})" title="Apagar projeto" style="font-size: 14px;">🗑️</button>
             </div>
           </td>
         </tr>
@@ -101,7 +232,7 @@
     document.getElementById('proj-modal-title').textContent = 'Novo Projeto';
     document.getElementById('pf-title').value = '';
     document.getElementById('pf-client').value = '';
-    document.getElementById('pf-desc').value = ''; // Limpa a descrição
+    document.getElementById('pf-desc').value = '';
     document.getElementById('pf-status').value = 'PLANEJAMENTO';
     document.getElementById('pf-priority').value = 'Alta';
     document.getElementById('pf-progress').value = 0;
@@ -116,7 +247,7 @@
     document.getElementById('proj-modal-title').textContent = 'Editar Projeto';
     document.getElementById('pf-title').value = p.title;
     document.getElementById('pf-client').value = p.client;
-    document.getElementById('pf-desc').value = p.desc || ''; // Carrega a descrição para edição
+    document.getElementById('pf-desc').value = p.desc || '';
     document.getElementById('pf-status').value = p.status;
     document.getElementById('pf-priority').value = p.priority;
     document.getElementById('pf-progress').value = p.progress;
@@ -131,7 +262,7 @@
     const dados = {
       title: title,
       client: document.getElementById('pf-client').value.trim(),
-      desc: document.getElementById('pf-desc').value.trim(), // Captura a descrição salva
+      desc: document.getElementById('pf-desc').value.trim(),
       status: document.getElementById('pf-status').value,
       priority: document.getElementById('pf-priority').value,
       progress: Number(document.getElementById('pf-progress').value) || 0,
@@ -151,8 +282,10 @@
   }
 
   function deletarProjeto(id) {
-    projetos = projetos.filter(x => x.id !== id);
-    iniciarDashboard();
+    if(confirm("Tem certeza que deseja apagar este projeto?")) {
+      projetos = projetos.filter(x => x.id !== id);
+      iniciarDashboard();
+    }
   }
 
   function filtrarTempo(tipo) {
@@ -162,3 +295,5 @@
 
   document.addEventListener("DOMContentLoaded", iniciarDashboard);
 </script>
+
+{% endblock %}
