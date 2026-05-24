@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 
-<!-- TITLE BAR -->
 <div class="title-bar">
   <div>
     <div class="page-title">Gestão de <span>Projetos</span></div>
@@ -15,7 +14,6 @@
   </div>
 </div>
 
-<!-- KPI STRIP OPERACIONAL -->
 <div class="kpi-strip">
   <div class="kpi-card blue">
     <div class="kpi-label">Projetos Cadastrados</div>
@@ -43,64 +41,82 @@
   </div>
 </div>
 
-<!-- MAIN GRID -->
 <div class="main-grid">
 
-  <!-- TABLE PANEL -->
-  <div class="panel">
+  <div class="panel" style="overflow: visible;">
     <div class="panel-header">
       <div class="panel-title">Todos os Projetos</div>
       <button class="btn btn-primary btn-sm" onclick="abrirCriacao()">+ Novo Projeto</button>
     </div>
     
-    <!-- TOOLBAR DE BUSCA E FILTRAGEM -->
-    <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 20px;">
-      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()">
-      <select class="filter-select" id="proj-filter-status" onchange="filtrarTabela()">
-        <option value="">TODOS STATUS</option>
-        <option value="PLANEJAMENTO">PLANEJAMENTO</option>
-        <option value="DESENVOLVIMENTO">DESENVOLVIMENTO</option>
-        <option value="TESTES">TESTES</option>
-        <option value="ENTREGUE">ENTREGUE</option>
-        <option value="PAUSADO">PAUSADO</option>
+    <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; width: 100%;">
+      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()" style="flex: 1; min-width: 180px;">
+      
+      <select class="filter-select" id="proj-filter-status" onchange="filtrarTabela()" style="
+        background: rgba(255,255,255,0.04); 
+        border: 1px solid var(--border); 
+        border-radius: 5px; 
+        padding: 8px 12px; 
+        color: var(--white); 
+        font-family: 'Barlow Condensed', sans-serif; 
+        font-size: 11px; 
+        letter-spacing: 1px; 
+        text-transform: uppercase; 
+        cursor: pointer;
+      ">
+        <option value="" style="background: var(--dark);">TODOS STATUS</option>
+        <option value="PLANEJAMENTO" style="background: var(--dark);">PLANEJAMENTO</option>
+        <option value="DESENVOLVIMENTO" style="background: var(--dark);">DESENVOLVIMENTO</option>
+        <option value="TESTES" style="background: var(--dark);">TESTES</option>
+        <option value="ENTREGUE" style="background: var(--dark);">ENTREGUE</option>
+        <option value="PAUSADO" style="background: var(--dark);">PAUSADO</option>
       </select>
-      <select class="filter-select" id="proj-filter-priority" onchange="filtrarTabela()">
-        <option value="">TODAS PRIORIDADES</option>
-        <option value="Alta">Alta</option>
-        <option value="Média">Média</option>
-        <option value="Baixa">Baixa</option>
+      
+      <select class="filter-select" id="proj-filter-priority" onchange="filtrarTabela()" style="
+        background: rgba(255,255,255,0.04); 
+        border: 1px solid var(--border); 
+        border-radius: 5px; 
+        padding: 8px 12px; 
+        color: var(--white); 
+        font-family: 'Barlow Condensed', sans-serif; 
+        font-size: 11px; 
+        letter-spacing: 1px; 
+        text-transform: uppercase; 
+        cursor: pointer;
+      ">
+        <option value="" style="background: var(--dark);">TODAS PRIORIDADES</option>
+        <option value="Alta" style="background: var(--dark);">Alta</option>
+        <option value="Média" style="background: var(--dark);">Média</option>
+        <option value="Baixa" style="background: var(--dark);">Baixa</option>
       </select>
     </div>
 
-    <!-- CONTÊINER DO SCROLL COM ESTILIZAÇÃO NEON EM MINHA PROPRIEDADE -->
-    <div style="width: 100%; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: var(--blue-bright) var(--dark);">
+    <div style="width: 100%; overflow-x: auto; padding: 12px 0; margin-top: 4px; scrollbar-width: thin; scrollbar-color: var(--blue-bright) var(--dark);">
       <style>
-        /* Estilização customizada da barra de rolagem para navegadores Webkit (Chrome, Edge, Safari) */
+        /* Ajuste do scrollbar neon */
         div::-webkit-scrollbar { height: 6px; }
         div::-webkit-scrollbar-track { background: rgba(12, 17, 32, 0.5); border-radius: 4px; }
-        div::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; border: 1px solid rgba(56, 182, 255, 0.2); }
-        div::-webkit-scrollbar-thumb:hover { background: var(--blue-bright); box-shadow: 0 0 10px var(--blue-bright); }
+        div::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        div::-webkit-scrollbar-thumb:hover { background: var(--blue-bright); }
       </style>
 
-      <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 650px;">
+      <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 800px; border-collapse: collapse;">
         <thead>
           <tr>
-            <th>Projeto</th>
-            <th>Status</th>
-            <th>Progresso</th>
-            <th>Prioridade</th>
-            <th>Equipe</th>
-            <th style="text-align: right; padding-right: 16px;">Ações</th>
+            <th style="width: 30%;">Projeto</th>
+            <th style="width: 20%;">Status</th>
+            <th style="width: 20%;">Progresso</th>
+            <th style="width: 12%;">Prioridade</th>
+            <th style="width: 10%;">Equipe</th>
+            <th style="width: 8%; text-align: right; padding-right: 16px;">Ações</th>
           </tr>
         </thead>
         <tbody id="corpo-tabela-projetos">
-          <!-- Injeção reativa via Javascript -->
-        </tbody>
+          </tbody>
       </table>
     </div>
   </div>
 
-  <!-- SIDEBAR COM GRÁFICO DONUT -->
   <div class="sidebar">
     <div class="panel">
       <div class="panel-header">
@@ -122,14 +138,12 @@
           <div class="label">Projetos</div>
         </div>
         <div class="donut-legend" id="donut-legend-list">
-          <!-- Injeção automática de legenda -->
-        </div>
+          </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MOTOR DO CRUD INTERNO -->
 <script>
   let projetos = [
     { id: 1, title: 'Sistema ERP Industrial', client: 'Metalúrgica Fortex', desc: 'Implantação completa do ERP com módulos de produção e estoque.', status: 'DESENVOLVIMENTO', progress: 72, priority: 'Alta', owner: 'RM' },
@@ -156,27 +170,29 @@
       let labelStatus = p.status.charAt(0) + p.status.slice(1).toLowerCase();
       
       return `
-        <tr>
+        <tr style="height: 70px;">
           <td>
-            <div class="proj-name">${p.title}</div>
-            <div class="proj-client">Cliente: ${p.client || 'Nexus Interno'}</div>
-            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
+            <div class="proj-name" style="font-size: 14px; font-weight: 500; color: var(--white);">${p.title}</div>
+            <div class="proj-client" style="font-size: 11px; color: var(--muted); margin-top: 2px;">Cliente: ${p.client || 'Nexus Interno'}</div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
               ${p.desc || '<i>Sem descrição cadastrada.</i>'}
             </div>
           </td>
           <td><span class="badge ${badgeCls}"><span class="badge-dot"></span>${labelStatus}</span></td>
           <td>
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%"></div></div>
-              <span class="progress-pct blue">${p.progress}%</span>
+            <div class="progress-wrap" style="display: flex; align-items: center; gap: 10px;">
+              <div class="progress-bar" style="flex: 1; height: 4px; background: rgba(254,254,254,0.08); border-radius: 2px; overflow: hidden;">
+                <div class="progress-fill" style="width:${p.progress}%; height: 100%; background: var(--blue-bright); border-radius: 2px;"></div>
+              </div>
+              <span class="progress-pct blue" style="font-size: 11px; font-weight: 600; font-family: 'Barlow Condensed'; width: 28px; text-align: right;">${p.progress}%</span>
             </div>
           </td>
           <td><span class="priority ${p.priority === 'Alta' ? 'alta' : p.priority === 'Média' ? 'media' : 'baixa'}">${p.priority}</span></td>
-          <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8; margin-left: 0;">${p.owner}</div></div></td>
-          <td style="text-align: right; padding-right: 16px;">
-            <div class="action-cell" style="justify-content: flex-end; gap: 8px;">
-              <button class="btn-icon" onclick="abrirEdicao(${p.id})" title="Editar projeto" style="font-size: 14px;">✏️</button>
-              <button class="btn-icon del" onclick="deletarProjeto(${p.id})" title="Apagar projeto" style="font-size: 14px;">🗑️</button>
+          <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8; margin-left: 0; width: 24px; height: 24px; border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; color: #fff;">${p.owner}</div></div></td>
+          <td style="text-align: right; padding-right: 16px; vertical-align: middle;">
+            <div class="action-cell" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
+              <button class="btn-icon" onclick="abrirEdicao(${p.id})" title="Editar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px;">✏️</button>
+              <button class="btn-icon del" onclick="deletarProjeto(${p.id})" title="Apagar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px;">🗑️</button>
             </div>
           </td>
         </tr>
