@@ -1,100 +1,201 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexus 360 Solutions — Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+
 <style>
-  :root {
-    --black: #060810; --dark: #0c1120; --panel: #101828; --panel2: #141e30;
-    --blue-bright: #38b6ff; --teal: #2dd4bf; --orange: #f97316;
-    --white: #f0f4ff; --muted: #8899bb; --border: rgba(56,182,255,0.15);
+  /* Sobrescreve o container para centralizar o card perfeitamente na tela de login */
+  .auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    position: relative;
+    z-index: 5;
+    padding: 20px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif;
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden;
-  }
-  body::before {
-    content: ''; position: fixed; inset: 0; background-size: 40px 40px; pointer-events: none; z-index: 0;
-    background-image: linear-gradient(rgba(56,182,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(56,182,255,0.04) 1px, transparent 1px);
-  }
-  .login-container {
-    position: relative; z-index: 5; background: var(--panel); border: 1px solid var(--border);
-    border-radius: 12px; width: 100%; max-width: 420px; padding: 40px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-  }
-  .logo-wrapper {
-    text-align: center; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center;
-  }
-  /* Recriação do estilo icônico do vetor da logo */
-  .logo-icon-svg { width: 120px; height: auto; margin-bottom: 12px; }
-  .logo-brand { font-size: 32px; font-weight: 700; letter-spacing: 4px; color: var(--white); }
-  .logo-sub { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
   
-  .form-group { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
-  .form-group input {
-    background: var(--panel2); border: 1px solid var(--border); border-radius: 6px;
-    padding: 12px 16px; color: var(--white); font-size: 14px; transition: all 0.2s;
+  .auth-card {
+    background: #101828;
+    border: 1px solid rgba(56, 182, 255, 0.15);
+    padding: 40px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px rgba(6, 8, 16, 0.6);
   }
-  .form-group input:focus { outline: none; border-color: var(--blue-bright); box-shadow: 0 0 8px rgba(56,182,255,0.2); }
-  
-  .btn-primary {
-    background: linear-gradient(90deg, var(--blue-mid, #1e7ec8), var(--blue-bright));
-    color: white; border: none; border-radius: 6px; padding: 14px; width: 100%;
-    font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
+
+  .auth-input-group {
+    text-align: left;
+    margin-bottom: 20px;
   }
-  .btn-primary:hover { opacity: 0.9; }
-  
-  .auth-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 12px; font-family: 'Barlow Condensed', sans-serif; }
-  .auth-links a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
-  .auth-links a:hover { color: var(--blue-bright); }
-  
-  .error-message { background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; color: #f87171; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; }
+
+  .auth-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    color: #8899bb;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .auth-input {
+    width: 100%;
+    background: #0c1120;
+    border: 1px solid rgba(56, 182, 255, 0.15);
+    padding: 14px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Barlow', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .auth-input:focus {
+    border-color: #38b6ff;
+    box-shadow: 0 0 10px rgba(56, 182, 255, 0.1);
+    outline: none;
+  }
+
+  .auth-btn {
+    width: 100%;
+    background: #38b6ff;
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    color: #060810;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+  }
+
+  .auth-btn:hover {
+    background: #2dd4bf;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 182, 255, 0.2);
+  }
+
+  .auth-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    font-size: 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  .auth-link {
+    color: #8899bb;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .auth-link:hover {
+    color: #38b6ff;
+  }
+
+  .auth-alert {
+    background: rgba(244, 63, 94, 0.1);
+    border-left: 3px solid #f43f5e;
+    padding: 12px;
+    font-size: 13px;
+    color: #f43f5e;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    text-align: left;
+  }
 </style>
-</head>
-<body>
 
-<div class="login-container">
-  <div class="logo-wrapper">
-    <!-- Renderização geométrica simplificada via SVG inspirada na Logo Oficial da imagem_03e2ca.png -->
-    <svg class="logo-icon-svg" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 45 L35 15 L55 35 L75 10 L90 10" stroke="#38b6ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M10 45 L30 25 L50 45 L70 20" stroke="#2dd4bf" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M55 35 L65 23 L75 33 L65 43 Z" fill="#f97316" opacity="0.85"/>
-      <path d="M75 10 L88 10 L82 22 Z" fill="#38b6ff"/>
-    </svg>
-    <div class="logo-brand">NEXUS 360</div>
-    <div class="logo-sub">Solutions</div>
-  </div>
-
-  {% if form.errors %}
-    <div class="error-message">E-mail ou senha incorretos. Por favor, tente novamente.</div>
-  {% endif %}
-
-  <form method="POST">
-    {% csrf_token %}
-    <div class="form-group">
-      <label for="id_username">E-mail</label>
-      <input type="email" name="username" id="id_username" autocomplete="email" required placeholder="exemplo@nexus.com">
-    </div>
+<div class="auth-wrapper">
+  <div class="auth-card">
     
-    <div class="form-group">
-      <label for="id_password">Senha</label>
-      <input type="password" name="password" id="id_password" autocomplete="current-password" required placeholder="••••••••">
+    <!-- ==============================================================================
+         LOGOTIPO TRIDIMENSIONAL OFICIAL (Fiel à edited-image_2.png)
+         ============================================================================== -->
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 28px;">
+      <div style="width: 100px; height: 100px; filter: drop-shadow(0 0 15px rgba(56, 182, 255, 0.35));">
+        <svg viewBox="0 0 120 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="auth-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38b6ff"/>
+              <stop offset="100%" stop-color="#1e7ec8"/>
+            </linearGradient>
+            <linearGradient id="auth-green" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2dd4bf"/>
+              <stop offset="100%" stop-color="#22c55e"/>
+            </linearGradient>
+            <linearGradient id="auth-orange" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f97316"/>
+              <stop offset="100%" stop-color="#ea580c"/>
+            </linearGradient>
+          </defs>
+
+          <!-- As 3 linhas paralelas entrando pela esquerda (edited-image_2.png) -->
+          <path d="M10,48 L35,48 L55,20 L75,50" stroke="url(#auth-blue)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M10,55 L32,55 L50,30 L67,56" stroke="url(#auth-green)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M10,62 L29,62 L45,40 L60,62" stroke="#2dd4bf" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+          <!-- Centro facetado -->
+          <polygon points="55,48 65,48 60,40" fill="#ffedd5" opacity="0.9"/>
+          <polygon points="55,48 65,48 60,56" fill="url(#auth-orange)"/>
+          <polygon points="65,48 75,54 67,56" fill="#1e2744" opacity="0.4"/>
+
+          <!-- Subida lateral formando o N -->
+          <path d="M60,56 L78,82 L102,24" stroke="url(#auth-blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M68,56 L83,76 L94,36" stroke="url(#auth-orange)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+          <!-- Brilhos internos -->
+          <polygon points="55,20 48,28 55,32" fill="#fff" opacity="0.3"/>
+          <polygon points="78,82 72,72 82,70" fill="#38b6ff" opacity="0.4"/>
+
+          <!-- Seta superior de alta performance -->
+          <polygon points="102,24 86,26 95,40" fill="#0f3460" stroke="url(#auth-blue)" stroke-width="1.5"/>
+        </svg>
+      </div>
+      
+      <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 2px; margin-top: 14px; color: #ffffff; text-align: center; line-height: 1;">
+        NEXUS <span style="font-size: 22px; vertical-align: super; color: #38b6ff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700;">360</span>
+      </h1>
+      <p style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; color: #8899bb; text-transform: uppercase; margin-top: 6px; text-align: center;">
+        SOLUTIONS
+      </p>
     </div>
 
-    <button type="submit" class="btn-primary">Acessar Plataforma</button>
-  </form>
+    <!-- MENSAGENS DE ERRO DO DJANGO -->
+    {% if form.errors or messages %}
+      <div class="auth-alert">
+        E-mail ou senha incorretos. Por favor, tente novamente.
+      </div>
+    {% endif %}
 
-  <div class="auth-links">
-    <a href="{% url 'cadastro' %}">Novo Usuário</a>
-    <a href="{% url 'password_reset' %}">Esqueci minha senha</a>
+    <!-- FORMULÁRIO DE LOGIN -->
+    <form method="POST">
+      {% csrf_token %}
+      <div class="auth-input-group">
+        <label class="auth-label">E-mail</label>
+        <input type="email" name="username" class="auth-input" required placeholder="exemplo@nexus.com" autofocus>
+      </div>
+      
+      <div class="auth-input-group">
+        <label class="auth-label">Senha</label>
+        <input type="password" name="password" class="auth-input" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="auth-btn">Acessar Plataforma</button>
+    </form>
+
+    <!-- LINKS ÚTEIS -->
+    <div class="auth-footer">
+      <a href="{% url 'cadastro' %}" class="auth-link">Novo Usuário</a>
+      <a href="{% url 'password_reset' %}" class="auth-link">Esqueci minha senha</a>
+    </div>
+
   </div>
 </div>
 
-</body>
-</html>
+{% endblock %}
