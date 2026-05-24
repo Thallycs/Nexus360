@@ -1,15 +1,59 @@
 from django.shortcuts import render, redirect
 from django.db import models  
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Project, SiteConfiguration
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Project, SiteConfiguration, UsuarioNexus
 
 # ==============================================================================
-# 1. VIEW DE CADASTRO DE USUÁRIO (ABERTA AO PÚBLICO)
+# 1. VIEW DE CADASTRO DE USUÁRIO (PROCESSANDO DADOS E SIMULANDO E-MAIL)
 # ==============================================================================
 def cadastro_view(request):
-    # Se o método for POST, processará o formulário de criação de conta futuramente
     if request.method == 'POST':
-        pass 
+        nome_completo = request.POST.get('nome_completo')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        senha = request.POST.get('senha')
+
+        # Validação básica para evitar duplicidade
+        if UsuarioNexus.objects.filter(email=email).exists():
+            messages.error(request, "Este e-mail já está cadastrado no sistema.")
+            return render(request, 'core/cadastro.html')
+
+        try:
+            # Cria o usuário desativado (is_active=False) até que seja aprovado/ativado
+            user = UsuarioNexus.objects.create_user(
+                username=email,  # O Django usa username como chave, passamos o e-mail
+                email=email,
+                password=senha,
+                first_name=nome_completo,
+                telefone=telefone,
+                is_active=False  # Fica pendente de aprovação
+            )
+
+            # Simulando o envio de e-mail com o link de ativação
+            # Nota: O link será impresso diretamente no terminal de LOGS do Render!
+            assunto = "Nexus 360 - Solicitação de Acesso Recebida"
+            link_ativacao = f"https://nexus360-qyx7.onrender.com/admin/core/usuarionexus/{user.id}/change/"
+            mensagem = f"Olá {nome_completo},\n\nSua solicitação de acesso ao Nexus 360 foi recebida.\nPara ativar esta conta, acesse o link de aprovação administrativo abaixo:\n\n{link_ativacao}"
+            
+            send_mail(
+                assunto,
+                mensagem,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+
+            # Injeta a mensagem de sucesso que será lida pela tela de Login
+            messages.success(request, "Solicitação enviada com sucesso! Verifique as instruções de ativação nos logs do servidor.")
+            return redirect('login')
+
+        except Exception as e:
+            messages.error(request, f"Erro interno ao processar cadastro: {str(e)}")
+            return render(request, 'core/cadastro.html')
+
     return render(request, 'core/cadastro.html')
 
 
