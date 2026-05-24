@@ -84,17 +84,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'base.wsgi.application'
 
 
+import dj_database_url
+
 # ==============================================================================
 # CONFIGURAÇÃO DE BANCO DE DADOS (PRODUÇÃO VS DESENVOLVIMENTO)
 # ==============================================================================
-if env("DATABASE_URL", default=None):
-    # Ambiente de Produção (Render / Linux): Usa PostgreSQL via URL segura
+if os.environ.get('RENDER'):
+    # Ambiente de Produção (Render / Linux): Usa o PostgreSQL remoto automaticamente
     DATABASES = {
-        'default': env.db()
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600
+        )
     }
     DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 else:
-    # Ambiente de Desenvolvimento (Seu Computador / Windows): 
+    # Ambiente de Desenvolvimento (Seu Computador / Windows):
     # Usa SQLite local para evitar erros de caractere (UnicodeDecodeError) no terminal
     DATABASES = {
         'default': {
