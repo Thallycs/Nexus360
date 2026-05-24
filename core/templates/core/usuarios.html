@@ -1,73 +1,75 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Usuários e Permissões - Nexus 360</title>
-    <style>
-        body { background-color: #0b132b; color: white; font-family: sans-serif; padding: 30px; }
-        .container { max-width: 1000px; margin: 0 auto; background-color: #1c2541; padding: 25px; border-radius: 8px; }
-        h2 { color: #00b4d8; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #3a506b; }
-        th { background-color: #0b132b; color: #48cae4; }
-        .badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-        .badge-admin { background-color: #d90429; color: white; }
-        .badge-user { background-color: #4cc9f0; color: #0b132b; }
-        .btn-acao { background-color: #00b4d8; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .disabled-view { opacity: 0.6; cursor: not-allowed; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Controle de Usuários & Níveis de Acesso</h2>
-        <p>Você está logado como: <strong>{{ user.email }}</strong> 
-            {% if user.is_staff %}
-                <span class="badge badge-admin">Administrador</span>
-            {% else %}
-                <span class="badge badge-user">Visualizador (Apenas Leitura)</span>
-            {% endif %}
-        </p>
+{% extends 'core/base.html' %}
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome Completo</th>
-                    <th>E-mail (Username)</th>
-                    <th>Telefone</th>
-                    <th>Tipo de Conta</th>
-                    {% if user.is_staff %}
-                        <th>Ações Administrativas</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in usuarios %}
-                <tr>
-                    <td>{{ u.first_name }}</td>
-                    <td>{{ u.email }}</td>
-                    <td>{{ u.telefone|default:"Não informado" }}</td>
-                    <td>
-                        {% if u.is_staff %}
-                            <span class="badge badge-admin">Admin / Staff</span>
-                        {% else %}
-                            <span class="badge badge-user">Usuário Comum</span>
-                        {% endif %}
-                    </td>
-                    {% if user.is_staff %}
-                        <td>
-                            <a href="/admin/core/usuarionexus/{{ u.id }}/change/" target="_blank" class="btn-acao">Alterar Permissão</a>
-                        </td>
-                    {% endif %}
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" style="text-align: center;">Nenhum usuário cadastrado.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <a href="{% url 'dashboard' %}" style="color: #aaa; text-decoration: none;">← Voltar ao Dashboard</a>
+{% block content %}
+<div style="padding: 0 40px;">
+  <div class="title-bar" style="padding: 10px 0 24px;">
+    <div>
+      <div class="page-title">Controle de <span>Usuários</span></div>
+      <div class="page-subtitle">Gerenciamento de credenciais e níveis de acesso</div>
     </div>
-</body>
-</html>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Níveis de Acesso — Banco PostgreSQL</div>
+    </div>
+    
+    <p style="margin-bottom: 24px; font-size: 13px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase;">
+      Conectado como: <strong style="color: var(--white); text-transform: none;">{{ user.email }}</strong> 
+      {% if user.is_staff %}
+        <span class="badge azul" style="margin-left: 8px;"><span class="badge-dot"></span>Administrador</span>
+      {% else %}
+        <span class="badge vermelho" style="margin-left: 8px;"><span class="badge-dot"></span>Visualizador (Apenas Leitura)</span>
+      {% endif %}
+    </p>
+
+    <table class="project-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+      <thead>
+        <tr>
+          <th style="padding: 10px 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);">Nome Completo</th>
+          <th style="padding: 10px 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);">E-mail (Username)</th>
+          <th style="padding: 10px 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);">Telefone</th>
+          <th style="padding: 10px 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);">Tipo de Conta</th>
+          {% if user.is_staff %}
+            <th style="padding: 10px 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);">Ações Administrativas</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr style="transition: background .2s;">
+          <td style="padding: 14px 12px; border-bottom: 1px solid rgba(56,182,255,0.05); vertical-align: middle; font-size: 14px; font-weight: 500; color: var(--white);">{{ u.first_name }}</td>
+          <td style="padding: 14px 12px; border-bottom: 1px solid rgba(56,182,255,0.05); vertical-align: middle; font-size: 13px; color: var(--muted);">{{ u.email }}</td>
+          <td style="padding: 14px 12px; border-bottom: 1px solid rgba(56,182,255,0.05); vertical-align: middle; font-size: 13px; color: var(--muted);">{{ u.telefone|default:"Não informado" }}</td>
+          <td style="padding: 14px 12px; border-bottom: 1px solid rgba(56,182,255,0.05); vertical-align: middle;">
+            {% if u.is_staff %}
+              <span class="badge azul"><span class="badge-dot"></span>Admin / Staff</span>
+            {% else %}
+              <span class="badge laranja"><span class="badge-dot"></span>Usuário Comum</span>
+            {% endif %}
+          </td>
+          {% if user.is_staff %}
+            <td style="padding: 14px 12px; border-bottom: 1px solid rgba(56,182,255,0.05); vertical-align: middle;">
+              <a href="/admin/core/usuarionexus/{{ u.id }}/change/" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none; display: inline-block;">
+                Alterar Permissão
+              </a>
+            </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="{% if user.is_staff %}5{% else %}4{% endif %}" style="text-align: center; padding: 40px 20px; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 2px; text-transform: uppercase; font-size: 13px;">
+            Nenhum usuário cadastrado no sistema.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <br><br>
+    <a href="{% url 'dashboard' %}" style="color: var(--muted); text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s;" onmouseover="this.style.color='var(--blue-bright)'" onmouseout="this.style.color='var(--muted)'">
+      ← Voltar ao Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}
