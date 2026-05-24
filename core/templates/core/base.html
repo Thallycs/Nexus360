@@ -222,6 +222,9 @@
 </head>
 <body>
 <div class="corner-deco"></div>
+
+<!-- NOVO: O Cabeçalho e a Navegação só renderizam se o usuário estiver autenticado -->
+{% if user.is_authenticated %}
 <header>
   <div class="logo-area">
     <!-- ÍCONE ATUALIZADO: Código Vetorial SVG Exato e Robusto da image_110609.png -->
@@ -287,6 +290,7 @@
   <a href="{% url 'relatorios_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'relatorios_page' %}active{% endif %}">Relatórios</a>
   <a href="{% url 'settings_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %}">Configurações</a>
 </nav>
+{% endif %}
 
 {% block content %}
 <!-- O conteúdo específico de cada página vai entrar aqui -->
