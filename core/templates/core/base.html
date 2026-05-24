@@ -22,7 +22,7 @@
   /* HEADER */
   header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; background: rgba(12,17,32,0.95); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
   .logo-area { display: flex; align-items: center; gap: 16px; }
-  .logo-icon { width: 44px; height: 44px; }
+  .logo-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 8px rgba(56, 182, 255, 0.25)); }
   .logo-text { display: flex; flex-direction: column; line-height: 1; }
   .logo-text .brand { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 3px; background: linear-gradient(90deg, var(--blue-bright), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .logo-text .sub { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
@@ -166,7 +166,7 @@
   .corner-deco { position: fixed; right: 0; bottom: 0; width: 300px; height: 300px; background: radial-gradient(ellipse at bottom right, rgba(249,115,22,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
 
   /* ==============================================================================
-     NOVO: CONFIGURAÇÃO DE TRANSIÇÃO E EFEITOS DE RELEVO (HOVER)
+     TRANSIÇÃO E EFEITOS DE RELEVO (HOVER)
      ============================================================================== */
   .nav-tab, .filter-btn, .kpi-card, .panel, .project-table tbody tr, .panel-action {
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
@@ -175,7 +175,7 @@
                 background-color 0.25s ease;
   }
 
-  /* Relevo nos Cards de KPI (Subida leve + Sombra Neon integrada) */
+  /* Relevo nos Cards de KPI */
   .kpi-card:hover {
     transform: translateY(-4px);
   }
@@ -196,7 +196,7 @@
     border-color: rgba(30, 126, 200, 0.4);
   }
 
-  /* Relevo nos Painéis Principais (Tabela, Gráficos, Alertas) */
+  /* Relevo nos Painéis Principais */
   .panel:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(6, 8, 16, 0.8), 0 4px 12px rgba(56, 182, 255, 0.08);
@@ -223,12 +223,35 @@
 <div class="corner-deco"></div>
 <header>
   <div class="logo-area">
+    <!-- ÍCONE ATUALIZADO: Código Vetorial SVG Exato do "N" com Seta Ascendente (image_10fa6f.png) -->
     <div class="logo-icon">
-      <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polyline points="2,34 14,14 22,24 30,10 42,10" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="g1" x1="2" y1="34" x2="42" y2="10" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#2dd4bf"/><stop offset="50%" stop-color="#38b6ff"/><stop offset="100%" stop-color="#1a2744"/></linearGradient>
+          <linearGradient id="nexus-grad-blue" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2dd4bf"/>
+            <stop offset="60%" stop-color="#38b6ff"/>
+            <stop offset="100%" stop-color="#1e7ec8"/>
+          </linearGradient>
+          <linearGradient id="nexus-grad-orange" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f97316"/>
+            <stop offset="100%" stop-color="#ffedd5"/>
+          </linearGradient>
         </defs>
+        
+        <!-- Perna esquerda do N + Linhas de fluxo tecnológicas inferiores -->
+        <path d="M5,65 L25,65 L45,25 L60,45" stroke="url(#nexus-grad-blue)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M5,73 L22,73 L40,37 L52,53" stroke="rgba(45, 212, 191, 0.35)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        
+        <!-- Elemento central entrelaçado (Triângulos e Polígonos de intersecção) -->
+        <polygon points="45,45 55,45 50,37" fill="#ffedd5" opacity="0.9"/>
+        <polygon points="45,45 55,45 50,53" fill="url(#nexus-grad-orange)"/>
+        
+        <!-- Perna direita do N com a Seta de Alta Performance Ascendente -->
+        <path d="M50,53 L65,75 L85,25" stroke="url(#nexus-grad-blue)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M58,53 L70,70 L80,35" stroke="url(#nexus-grad-orange)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        
+        <!-- Cabeça da Seta de Crescimento Organizacional -->
+        <polygon points="85,25 72,30 80,42" fill="#38b6ff"/>
       </svg>
     </div>
     <div class="logo-text"><span class="brand">NEXUS 360</span><span class="sub">Solutions</span></div>
