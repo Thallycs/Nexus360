@@ -609,6 +609,7 @@
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
     transition: all .2s;
+    text-decoration: none; 
   }
 
   .nav-tab.active {
@@ -665,11 +666,11 @@
 
 <!-- NAV TABS -->
 <nav>
-  <div class="nav-tab active">Projetos</div>
-  <div class="nav-tab">Equipes</div>
-  <div class="nav-tab">Finanças</div>
-  <div class="nav-tab">Relatórios</div>
-  <div class="nav-tab">Configurações</div>
+  <a href="{% url 'dashboard' %}" class="nav-tab active">Projetos</a>
+  <a href="{% url 'equipes_page' %}" class="nav-tab">Equipes</a>
+  <a href="{% url 'financas_page' %}" class="nav-tab">Finanças</a>
+  <a href="{% url 'relatorios_page' %}" class="nav-tab">Relatórios</a>
+  <a href="{% url 'settings_page' %}" class="nav-tab">Configurações</a>
 </nav>
 
 <!-- TITLE BAR -->
