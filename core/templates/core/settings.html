@@ -8,15 +8,52 @@
   </div>
 </div>
 
-<div class="panel">
+<div class="panel" style="margin-bottom: 24px;">
   <div class="panel-header"><div class="panel-title">Preferências do Sistema</div></div>
   <div style="display:flex; flex-direction:column; gap:16px;">
-    <label style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+    <label style="display:flex; align-items:center; gap:12px; cursor:pointer; color: #fff;">
       <input type="checkbox" checked style="accent-color:var(--blue-bright);"> Modo Noturno Neon Habilitado
     </label>
-    <label style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+    <label style="display:flex; align-items:center; gap:12px; cursor:pointer; color: #fff;">
       <input type="checkbox" checked style="accent-color:var(--blue-bright);"> Atualização em Tempo Real (WebSockets)
     </label>
+  </div>
+</div>
+
+<div class="panel" style="border: 1px solid #ff4d4d66; background: linear-gradient(135deg, #1c2541 0%, #151b30 100%);">
+  <div class="panel-header" style="border-bottom: 1px solid #ff4d4d33;">
+    <div class="panel-title" style="color: #ff4d4d; display: flex; align-items: center; gap: 8px;">
+      ⚠️ Segurança da Conta
+    </div>
+  </div>
+  
+  <div style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+    <p style="font-size: 14px; color: #aaa; margin: 0;">
+      Deseja encerrar suas atividades no <strong>Nexus 360</strong> e desconectar seu usuário com segurança? Isso limpará os tokens de sessão ativos.
+    </p>
+    
+    <form action="{% url 'logout' %}" method="post" style="margin: 0; width: 100%; max-width: 250px;">
+      {% csrf_token %}
+      <button type="submit" style="
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        font-family: sans-serif;
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 0 10px rgba(255, 77, 77, 0.2);
+      "
+      onmouseover="this.style.backgroundColor='#ff3333'; this.style.boxShadow='0 0 15px rgba(255, 77, 77, 0.5)';"
+      onmouseout="this.style.backgroundColor='#ff4d4d'; this.style.boxShadow='0 0 10px rgba(255, 77, 77, 0.2)';"
+      >
+        Sair / Deslogar
+      </button>
+    </form>
   </div>
 </div>
 {% endblock %}
