@@ -22,9 +22,10 @@
   /* HEADER */
   header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; background: rgba(12,17,32,0.95); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
   .logo-area { display: flex; align-items: center; gap: 16px; }
-  .logo-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 8px rgba(56, 182, 255, 0.25)); }
+  .logo-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 10px rgba(56, 182, 255, 0.3)); }
   .logo-text { display: flex; flex-direction: column; line-height: 1; }
-  .logo-text .brand { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 3px; background: linear-gradient(90deg, var(--blue-bright), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo-text .brand { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; background: linear-gradient(90deg, var(--white), #e2e8f0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo-text .brand span { font-size: 20px; vertical-align: super; color: var(--blue-bright); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; margin-left: 2px; }
   .logo-text .sub { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
   .header-right { display: flex; align-items: center; gap: 24px; }
   .live-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); font-family: 'Barlow Condensed', sans-serif; font-weight: 600; }
@@ -223,39 +224,56 @@
 <div class="corner-deco"></div>
 <header>
   <div class="logo-area">
-    <!-- ÍCONE ATUALIZADO: Código Vetorial SVG Exato do "N" com Seta Ascendente (image_10fa6f.png) -->
+    <!-- ÍCONE ATUALIZADO: Código Vetorial SVG Exato e Robusto da image_110609.png -->
     <div class="logo-icon">
-      <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 120 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="nexus-grad-blue" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#2dd4bf"/>
-            <stop offset="60%" stop-color="#38b6ff"/>
+          <linearGradient id="line-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#38b6ff"/>
             <stop offset="100%" stop-color="#1e7ec8"/>
           </linearGradient>
-          <linearGradient id="nexus-grad-orange" x1="0%" y1="100%" x2="100%" y2="0%">
+          <linearGradient id="line-green" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2dd4bf"/>
+            <stop offset="100%" stop-color="#22c55e"/>
+          </linearGradient>
+          <linearGradient id="center-orange" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#f97316"/>
-            <stop offset="100%" stop-color="#ffedd5"/>
+            <stop offset="100%" stop-color="#ea580c"/>
           </linearGradient>
         </defs>
-        
-        <!-- Perna esquerda do N + Linhas de fluxo tecnológicas inferiores -->
-        <path d="M5,65 L25,65 L45,25 L60,45" stroke="url(#nexus-grad-blue)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <path d="M5,73 L22,73 L40,37 L52,53" stroke="rgba(45, 212, 191, 0.35)" stroke-width="3" stroke-linecap="round" fill="none"/>
-        
-        <!-- Elemento central entrelaçado (Triângulos e Polígonos de intersecção) -->
-        <polygon points="45,45 55,45 50,37" fill="#ffedd5" opacity="0.9"/>
-        <polygon points="45,45 55,45 50,53" fill="url(#nexus-grad-orange)"/>
-        
-        <!-- Perna direita do N com a Seta de Alta Performance Ascendente -->
-        <path d="M50,53 L65,75 L85,25" stroke="url(#nexus-grad-blue)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <path d="M58,53 L70,70 L80,35" stroke="url(#nexus-grad-orange)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        
-        <!-- Cabeça da Seta de Crescimento Organizacional -->
-        <polygon points="85,25 72,30 80,42" fill="#38b6ff"/>
+
+        <!-- As 3 linhas tecnológicas paralelas entrando pela esquerda -->
+        <path d="M10,48 L35,48 L55,20 L75,50" stroke="url(#line-blue)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M10,55 L32,55 L50,30 L67,56" stroke="url(#line-green)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M10,62 L29,62 L45,40 L60,62" stroke="#2dd4bf" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+        <!-- Núcleo central tridimensional facetado -->
+        <polygon points="55,48 65,48 60,40" fill="#ffedd5" opacity="0.9"/>
+        <polygon points="55,48 65,48 60,56" fill="url(#center-orange)"/>
+        <polygon points="65,48 75,54 67,56" fill="#1e2744" opacity="0.4"/>
+
+        <!-- Estrutura geométrica que sobe para o lado direito criando o N -->
+        <path d="M60,56 L78,82 L102,24" stroke="url(#line-blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M68,56 L83,76 L94,36" stroke="url(#center-orange)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+        <!-- Triângulos internos de reflexo azul/branco -->
+        <polygon points="55,20 48,28 55,32" fill="#fff" opacity="0.3"/>
+        <polygon points="78,82 72,72 82,70" fill="#38b6ff" opacity="0.4"/>
+
+        <!-- Cabeça da Seta de Alta Performance Ascendente -->
+        <polygon points="102,24 86,26 95,40" fill="#0f3460" stroke="url(#line-blue)" stroke-width="1.5"/>
       </svg>
     </div>
-    <div class="logo-text"><span class="brand">NEXUS 360</span><span class="sub">Solutions</span></div>
+    
+    <!-- Tipografia oficial com o 360 alinhado -->
+    <div class="logo-text">
+      <span class="brand">
+        NEXUS <span>360</span>
+      </span>
+      <span class="sub">SOLUTIONS</span>
+    </div>
   </div>
+  
   <div class="header-right">
     <div class="live-badge"><div class="live-dot"></div>Ao Vivo</div>
     <div class="date-display" id="datetime">—</div>
