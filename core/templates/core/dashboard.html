@@ -46,11 +46,11 @@
   <div class="panel" style="overflow: visible;">
     <div class="panel-header">
       <div class="panel-title">Todos os Projetos</div>
-      <button class="btn btn-primary btn-sm" onclick="abrirCriacao()">+ Novo Projeto</button>
+      <button class="btn btn-primary btn-sm" onclick="abrirCriacao()" style="position: relative; z-index: 20; pointer-events: auto;">+ Novo Projeto</button>
     </div>
     
-    <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; width: 100%;">
-      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()" style="flex: 1; min-width: 180px;">
+    <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; width: 100%; position: relative; z-index: 10;">
+      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()" style="flex: 1; min-width: 180px; pointer-events: auto;">
       
       <select class="filter-select" id="proj-filter-status" onchange="filtrarTabela()" style="
         background: rgba(255,255,255,0.04); 
@@ -63,6 +63,7 @@
         letter-spacing: 1px; 
         text-transform: uppercase; 
         cursor: pointer;
+        pointer-events: auto;
       ">
         <option value="" style="background: var(--dark);">TODOS STATUS</option>
         <option value="PLANEJAMENTO" style="background: var(--dark);">PLANEJAMENTO</option>
@@ -83,6 +84,7 @@
         letter-spacing: 1px; 
         text-transform: uppercase; 
         cursor: pointer;
+        pointer-events: auto;
       ">
         <option value="" style="background: var(--dark);">TODAS PRIORIDADES</option>
         <option value="Alta" style="background: var(--dark);">Alta</option>
@@ -91,20 +93,24 @@
       </select>
     </div>
 
-    <div style="width: 100%; overflow-x: auto; padding: 12px 0; margin-top: 4px; scrollbar-width: thin; scrollbar-color: var(--blue-bright) var(--dark);">
+    <div style="width: 100%; overflow-x: auto; padding: 12px 0; margin-top: 4px; position: relative; z-index: 1; pointer-events: auto; scrollbar-width: thin; scrollbar-color: var(--blue-bright) var(--dark);">
       <style>
-        /* Ajuste do scrollbar neon */
         div::-webkit-scrollbar { height: 6px; }
         div::-webkit-scrollbar-track { background: rgba(12, 17, 32, 0.5); border-radius: 4px; }
         div::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         div::-webkit-scrollbar-thumb:hover { background: var(--blue-bright); }
+        
+        /* Força o alto relevo nativo a ignorar o isolamento do contêiner */
+        .project-table tbody tr { transition: all 0.2s ease-in-out !important; }
+        .project-table tbody tr:hover { background: rgba(56, 182, 255, 0.05) !important; transform: scale(1.005) translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .btn-icon:hover { transform: scale(1.2); }
       </style>
 
       <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 800px; border-collapse: collapse;">
         <thead>
           <tr>
-            <th style="width: 30%;">Projeto</th>
-            <th style="width: 20%;">Status</th>
+            <th style="width: 35%;">Projeto</th>
+            <th style="width: 15%;">Status</th>
             <th style="width: 20%;">Progresso</th>
             <th style="width: 12%;">Prioridade</th>
             <th style="width: 10%;">Equipe</th>
@@ -170,11 +176,11 @@
       let labelStatus = p.status.charAt(0) + p.status.slice(1).toLowerCase();
       
       return `
-        <tr style="height: 70px;">
+        <tr style="height: 75px;">
           <td>
             <div class="proj-name" style="font-size: 14px; font-weight: 500; color: var(--white);">${p.title}</div>
             <div class="proj-client" style="font-size: 11px; color: var(--muted); margin-top: 2px;">Cliente: ${p.client || 'Nexus Interno'}</div>
-            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
               ${p.desc || '<i>Sem descrição cadastrada.</i>'}
             </div>
           </td>
@@ -190,9 +196,9 @@
           <td><span class="priority ${p.priority === 'Alta' ? 'alta' : p.priority === 'Média' ? 'media' : 'baixa'}">${p.priority}</span></td>
           <td><div class="avatar-group"><div class="avatar a" style="background:#1e7ec8; margin-left: 0; width: 24px; height: 24px; border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; color: #fff;">${p.owner}</div></div></td>
           <td style="text-align: right; padding-right: 16px; vertical-align: middle;">
-            <div class="action-cell" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
-              <button class="btn-icon" onclick="abrirEdicao(${p.id})" title="Editar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px;">✏️</button>
-              <button class="btn-icon del" onclick="deletarProjeto(${p.id})" title="Apagar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px;">🗑️</button>
+            <div class="action-cell" style="display: flex; gap: 14px; justify-content: flex-end; align-items: center;">
+              <button class="btn-icon" onclick="abrirEdicao(${p.id})" title="Editar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">✏️</button>
+              <button class="btn-icon del" onclick="deletarProjeto(${p.id})" title="Apagar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">🗑️</button>
             </div>
           </td>
         </tr>
