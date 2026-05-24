@@ -84,23 +84,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'base.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# ==============================================================================
+# CONFIGURAÇÃO DE BANCO DE DADOS (PRODUÇÃO VS DESENVOLVIMENTO)
+# ==============================================================================
 if env("DATABASE_URL", default=None):
+    # Ambiente de Produção (Render / Linux): Usa PostgreSQL via URL segura
     DATABASES = {
         'default': env.db()
     }
     DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 else:
+    # Ambiente de Desenvolvimento (Seu Computador / Windows): 
+    # Usa SQLite local para evitar erros de caractere (UnicodeDecodeError) no terminal
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'nexus360_db',
-            'USER': 'postgres',
-            'PASSWORD': 'coloque_sua_senha_local_aqui',
-            'HOST': 'localhost',
-            'PORT': '5432',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
 
