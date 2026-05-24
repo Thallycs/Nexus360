@@ -16,7 +16,7 @@ urlpatterns = [
         subject_template_name='core/password_reset_subject.txt'
     ), name='password_reset'),
     
-    # 4. Confirmação de envio do e-mail
+    # 4. Confirmação de envio do e-mail (Onde gerou o erro TemplateDoesNotExist)
     path('esqueci-senha/sucesso/', auth_views.PasswordResetDoneView.as_view(
         template_name='core/esqueci_senha_enviado.html'
     ), name='password_reset_done'),
@@ -34,7 +34,7 @@ urlpatterns = [
     # 7. Rota de Logout (Para limpar a sessão e voltar ao login)
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 
-    # --- Suas rotas originais mantidas abaixo ---
+    # --- Rotas do Sistema Nexus 360 ---
     path('dashboard/', views.dashboard, name='dashboard'),
     path('equipes/', views.equipes, name='equipes_page'),
     path('financas/', views.financas, name='financas_page'),
