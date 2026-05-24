@@ -152,3 +152,17 @@ LOGOUT_REDIRECT_URL = 'login'
 # Configuração temporária para ver os e-mails de recuperação de senha no console do VS Code
 # (Para produção com e-mail real, depois configuramos o SMTP da sua preferência)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+import os
+
+# Configurações de arquivos estáticos (CSS, JavaScript, Imagens)
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Garante que o Django saiba procurar os arquivos estáticos na pasta do seu app
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+# Configuração para o WhiteNoise compactar e armazenar em cache o CSS de forma ultra rápida
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
