@@ -105,10 +105,10 @@ def equipes(request):
 def financas(request):
     return render(request, 'core/financas.html')
 
-```python
 @login_required
 def relatorios(request):
     return render(request, 'core/relatorios.html')
+
 
 # ==============================================================================
 # 6. VIEW DE CONFIGURAÇÕES (APENAS ADMINISTRADORES LOGADOS)
