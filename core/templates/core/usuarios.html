@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários e Permissões - Nexus 360</title>
+    <style>
+        body { background-color: #0b132b; color: white; font-family: sans-serif; padding: 30px; }
+        .container { max-width: 1000px; margin: 0 auto; background-color: #1c2541; padding: 25px; border-radius: 8px; }
+        h2 { color: #00b4d8; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #3a506b; }
+        th { background-color: #0b132b; color: #48cae4; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        .badge-admin { background-color: #d90429; color: white; }
+        .badge-user { background-color: #4cc9f0; color: #0b132b; }
+        .btn-acao { background-color: #00b4d8; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 13px; }
+        .disabled-view { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Controle de Usuários & Níveis de Acesso</h2>
+        <p>Você está logado como: <strong>{{ user.email }}</strong> 
+            {% if user.is_staff %}
+                <span class="badge badge-admin">Administrador</span>
+            {% else %}
+                <span class="badge badge-user">Visualizador (Apenas Leitura)</span>
+            {% endif %}
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome Completo</th>
+                    <th>E-mail (Username)</th>
+                    <th>Telefone</th>
+                    <th>Tipo de Conta</th>
+                    {% if user.is_staff %}
+                        <th>Ações Administrativas</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u.first_name }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.telefone|default:"Não informado" }}</td>
+                    <td>
+                        {% if u.is_staff %}
+                            <span class="badge badge-admin">Admin / Staff</span>
+                        {% else %}
+                            <span class="badge badge-user">Usuário Comum</span>
+                        {% endif %}
+                    </td>
+                    {% if user.is_staff %}
+                        <td>
+                            <a href="/admin/core/usuarionexus/{{ u.id }}/change/" target="_blank" class="btn-acao">Alterar Permissão</a>
+                        </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Nenhum usuário cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <a href="{% url 'dashboard' %}" style="color: #aaa; text-decoration: none;">← Voltar ao Dashboard</a>
+    </div>
+</body>
+</html>
