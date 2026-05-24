@@ -74,6 +74,7 @@ TEMPLATES = [
             ],
         },
     },
+    
 ]
 
 WSGI_APPLICATION = 'base.wsgi.application'
@@ -132,17 +133,17 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
 # ==============================================================================
-# CONFIGURAÇÃO DE ENVIO DE E-MAIL REAL (SMTP VIA VARIÁVEIS DO RENDER)
+# CONFIGURAÇÃO DE ENVIO DE E-MAIL REAL (SMTP VIA VARIÁVEIS DE SISTEMA DO RENDER)
 # ==============================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Coleta com segurança as chaves configuradas na aba "Environment" do seu painel do Render
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='talita.eng.comp@gmail.com')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+# Força a leitura direta do os.environ para garantir persistência no contêiner Linux remoto
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'talita.eng.comp@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
-# CORREÇÃO: Diretrizes explícitas de remetente exigidas para servidores de produção Linux
+# Diretrizes explícitas de remetente exigidas para servidores de produção SMTP externos
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
