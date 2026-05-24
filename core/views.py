@@ -13,7 +13,7 @@ from .models import Project, SiteConfiguration, UsuarioNexus
 def cadastro_view(request):
     if request.method == 'POST':
         nome_completo = request.POST.get('nome_completo')
-        email = request.POST.get('email')
+        email = request.POST.get('email', '').strip()
         telefone = request.POST.get('telefone')
         senha = request.POST.get('senha')
 
@@ -59,44 +59,38 @@ def cadastro_view(request):
 
 
 # ==============================================================================
-# 2. VIEW CUSTOMIZADA DO FLUXO DE RECUPERAÇÃO DE SENHA (LINK DIRETO NA TELA)
+# 2. VIEW CUSTOMIZADA DE RECUPERAÇÃO DE SENHA (VALIDAÇÃO EXPLICITA E LINK NA TELA)
 # ==============================================================================
 class PasswordResetVisualView(PasswordResetView):
     template_name = 'core/esqueci_senha.html'
     
-    def form_valid(self, form):
-        # Tenta rodar o fluxo padrão em background sem travar o processamento
-        opts = {
-            'use_https': self.request.is_secure(),
-            'token_generator': self.token_generator,
-            'from_email': self.from_email,
-            'email_template_name': self.email_template_name,
-            'subject_template_name': self.subject_template_name,
-            'request': self.request,
-            'html_email_template_name': self.html_email_template_name,
-            'extra_email_context': self.extra_email_context,
-        }
-        form.save(**opts)
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email', '').strip()
         
-        # Coleta os dados e gera o link seguro em tempo de execução para exibir na tela
-        email = form.cleaned_data["email"]
+        # Procura o usuário de forma explícita no banco de dados do Render
         users = UsuarioNexus.objects.filter(email__iexact=email)
-        context = {'email_digitado': email}
         
+        # Se não achar o e-mail, quebra a regra de segurança padrão para te ajudar no teste!
+        if not users.exists():
+            messages.error(request, f"O e-mail '{email}' não foi encontrado no banco de dados PostgreSQL do Nexus 360.")
+            return render(request, self.template_name, {'form': self.get_form()})
+            
+        # Se o e-mail existir, monta o link seguro capturando o token do banco
+        context = {'email_digitado': email}
         for user in users:
             from django.utils.http import urlsafe_base64_encode
             from django.utils.encoding import force_bytes
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = self.token_generator.make_token(user)
             
-            domain = self.request.get_host()
-            protocol = 'https' if self.request.is_secure() else 'http'
+            domain = request.get_host()
+            protocol = 'https' if request.is_secure() else 'http'
             link_direto = f"{protocol}://{domain}/redefinir/{uid}/{token}/"
             
             context['link_seguro'] = link_direto
-            break 
+            break
             
-        return render(self.request, 'core/esqueci_senha_enviado.html', context)
+        return render(request, 'core/esqueci_senha_enviado.html', context)
 
 
 # ==============================================================================
