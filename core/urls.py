@@ -9,18 +9,15 @@ urlpatterns = [
     # 2. Tela de Cadastro de Novo Usuário
     path('cadastro/', views.cadastro_view, name='cadastro'),
     
-    # 3. Fluxo de Recuperação de Senha ("Esqueci minha senha")
-    # REMOVIDO: Arquivos faltantes de e-mail deletados para usar o padrão seguro do Django
-    path('esqueci-senha/', auth_views.PasswordResetView.as_view(
-        template_name='core/esqueci_senha.html'
-    ), name='password_reset'),
+    # 3. Fluxo de Recuperação de Senha (CORRIGIDO: Aponta para a View Visual Customizada)
+    path('esqueci-senha/', views.PasswordResetVisualView.as_view(), name='password_reset'),
     
     # 4. Confirmação de envio do e-mail
     path('esqueci-senha/sucesso/', auth_views.PasswordResetDoneView.as_view(
         template_name='core/esqueci_senha_enviado.html'
     ), name='password_reset_done'),
     
-    # 5. Link seguro que o usuário recebe no e-mail para digitar a nova senha
+    # 5. Link seguro que o usuário recebe para digitar a nova senha
     path('redefinir/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
         template_name='core/redefinir_senha_formulario.html'
     ), name='password_reset_confirm'),
@@ -35,6 +32,7 @@ urlpatterns = [
 
     # --- Rotas do Sistema Nexus 360 ---
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('usuarios/', views.usuarios_view, name='usuarios_page'),  # NOVA: Rota de Usuários e Permissões
     path('equipes/', views.equipes, name='equipes_page'),
     path('financas/', views.financas, name='financas_page'),
     path('relatorios/', views.relatorios, name='relatorios_page'),
