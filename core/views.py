@@ -2,13 +2,11 @@ from django.shortcuts import render, redirect
 from django.db import models  
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.mail import send_mail
-from django.conf import settings
 from django.contrib.auth.views import PasswordResetView
 from .models import Project, SiteConfiguration, UsuarioNexus
 
 # ==============================================================================
-# 1. VIEW DE CADASTRO DE USUÁRIO (NASCE ATIVO E SEM TRAVAR NO EMAIL)
+# 1. VIEW DE CADASTRO DE USUÁRIO (ACESSO LIBERADO SEM TRAVA DE E-MAIL)
 # ==============================================================================
 def cadastro_view(request):
     if request.method == 'POST':
@@ -17,15 +15,15 @@ def cadastro_view(request):
         telefone = request.POST.get('telefone')
         senha = request.POST.get('senha')
 
-        # Validação básica para evitar duplicidade
+        # Validação básica para evitar duplicidade de contas
         if UsuarioNexus.objects.filter(email=email).exists():
             messages.error(request, "Este e-mail já está cadastrado no sistema.")
             return render(request, 'core/cadastro.html')
 
         try:
-            # Usuário nasce ativo (is_active=True) para testes estáveis em produção
+            # O usuário nasce ativo (is_active=True) permitindo login imediato em produção
             user = UsuarioNexus.objects.create_user(
-                username=email,  # O Django usa username como chave, passamos o e-mail
+                username=email,  # Chave primária de autenticação atrelada ao e-mail
                 email=email,
                 password=senha,
                 first_name=nome_completo,
@@ -33,20 +31,7 @@ def cadastro_view(request):
                 is_active=True  
             )
 
-            # Preparando simulação de e-mail informativa nos bastidores
-            assunto = "Nexus 360 - Conta Criada com Sucesso"
-            link_painel = "https://nexus360-qyx7.onrender.com/"
-            mensagem = f"Olá {nome_completo},\n\nSua conta no Nexus 360 foi criada e já está ativa!\nAcesse o painel para fazer login:\n\n{link_painel}"
-            
-            # fail_silently=True garante que se o Gmail bloquear, o fluxo segue normalmente
-            send_mail(
-                assunto,
-                mensagem,
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                fail_silently=True,
-            )
-
+            # Injeta o feedback de sucesso capturado pela tela de Login
             messages.success(request, "Cadastro realizado com sucesso! Faça seu login abaixo.")
             return redirect('login')
 
@@ -58,7 +43,7 @@ def cadastro_view(request):
 
 
 # ==============================================================================
-# 2. VIEW CUSTOMIZADA DE RECUPERAÇÃO DE SENHA (VALIDAÇÃO EXPLICITA E LINK NA TELA)
+# 2. VIEW CUSTOMIZADA DE RECUPERAÇÃO DE SENHA (LINK EXPLICITO EM TELA)
 # ==============================================================================
 class PasswordResetVisualView(PasswordResetView):
     template_name = 'core/esqueci_senha.html'
@@ -104,7 +89,7 @@ def dashboard(request):
 # ==============================================================================
 @login_required
 def usuarios_view(request):
-    # Coleta todos os usuários cadastrados no banco e ordena por nome
+    # Coleta todos os usuários cadastrados e ordena por primeiro nome
     usuarios = UsuarioNexus.objects.all().order_by('first_name')
     return render(request, 'core/usuarios.html', {'usuarios': usuarios})
 
@@ -120,10 +105,10 @@ def equipes(request):
 def financas(request):
     return render(request, 'core/financas.html')
 
+```python
 @login_required
 def relatorios(request):
     return render(request, 'core/relatorios.html')
-
 
 # ==============================================================================
 # 6. VIEW DE CONFIGURAÇÕES (APENAS ADMINISTRADORES LOGADOS)
