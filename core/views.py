@@ -8,7 +8,7 @@ from django.contrib.auth.views import PasswordResetView
 from .models import Project, SiteConfiguration, UsuarioNexus
 
 # ==============================================================================
-# 1. VIEW DE CADASTRO DE USUÁRIO (CORRIGIDA: NASCE ATIVO E SEM TRAVAR NO EMAIL)
+# 1. VIEW DE CADASTRO DE USUÁRIO (NASCE ATIVO E SEM TRAVAR NO EMAIL)
 # ==============================================================================
 def cadastro_view(request):
     if request.method == 'POST':
@@ -23,14 +23,14 @@ def cadastro_view(request):
             return render(request, 'core/cadastro.html')
 
         try:
-            # CORREÇÃO: Mudamos is_active para True para você conseguir logar imediatamente!
+            # Usuário nasce ativo (is_active=True) para testes estáveis em produção
             user = UsuarioNexus.objects.create_user(
                 username=email,  # O Django usa username como chave, passamos o e-mail
                 email=email,
                 password=senha,
                 first_name=nome_completo,
                 telefone=telefone,
-                is_active=True  # Ativo por padrão para testes de deploy estáveis
+                is_active=True  
             )
 
             # Preparando simulação de e-mail informativa nos bastidores
@@ -38,7 +38,7 @@ def cadastro_view(request):
             link_painel = "https://nexus360-qyx7.onrender.com/"
             mensagem = f"Olá {nome_completo},\n\nSua conta no Nexus 360 foi criada e já está ativa!\nAcesse o painel para fazer login:\n\n{link_painel}"
             
-            # CORREÇÃO: fail_silently=True garante que se o Gmail bloquear, o site NÃO dá erro 500
+            # fail_silently=True garante que se o Gmail bloquear, o fluxo segue normalmente
             send_mail(
                 assunto,
                 mensagem,
@@ -47,7 +47,6 @@ def cadastro_view(request):
                 fail_silently=True,
             )
 
-            # Injeta a mensagem de sucesso que será lida pela tela de Login
             messages.success(request, "Cadastro realizado com sucesso! Faça seu login abaixo.")
             return redirect('login')
 
@@ -70,12 +69,10 @@ class PasswordResetVisualView(PasswordResetView):
         # Procura o usuário de forma explícita no banco de dados do Render
         users = UsuarioNexus.objects.filter(email__iexact=email)
         
-        # Se não achar o e-mail, quebra a regra de segurança padrão para te ajudar no teste!
         if not users.exists():
             messages.error(request, f"O e-mail '{email}' não foi encontrado no banco de dados PostgreSQL do Nexus 360.")
             return render(request, self.template_name, {'form': self.get_form()})
             
-        # Se o e-mail existir, monta o link seguro capturando o token do banco
         context = {'email_digitado': email}
         for user in users:
             from django.utils.http import urlsafe_base64_encode
@@ -103,7 +100,17 @@ def dashboard(request):
 
 
 # ==============================================================================
-# 4. VIEWS DAS DEMAIS PÁGINAS INTERNAS (MANTIDAS E PROTEGIDAS)
+# 4. VIEW DE LISTAGEM DE USUÁRIOS E PERMISSÕES (PROTEGIDA POR LOGIN)
+# ==============================================================================
+@login_required
+def usuarios_view(request):
+    # Coleta todos os usuários cadastrados no banco e ordena por nome
+    usuarios = UsuarioNexus.objects.all().order_by('first_name')
+    return render(request, 'core/usuarios.html', {'usuarios': usuarios})
+
+
+# ==============================================================================
+# 5. VIEWS DAS DEMAIS PÁGINAS INTERNAS (MANTIDAS E PROTEGIDAS)
 # ==============================================================================
 @login_required
 def equipes(request):
@@ -119,7 +126,7 @@ def relatorios(request):
 
 
 # ==============================================================================
-# 5. VIEW DE CONFIGURAÇÕES (APENAS ADMINISTRADORES LOGADOS)
+# 6. VIEW DE CONFIGURAÇÕES (APENAS ADMINISTRADORES LOGADOS)
 # ==============================================================================
 @login_required
 @user_passes_test(lambda u: u.is_staff)
