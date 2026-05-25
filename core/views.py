@@ -40,21 +40,59 @@ def cadastro_view(request):
 
 
 # ==============================================================================
-# 2. VIEW DO DASHBOARD (ABRE O LAYOUT OPERACIONAL IGUAL AO VÍDEO)
+# 2. VIEW DO DASHBOARD (CRUD COM PERSISTÊNCIA NO POSTGRESQL E FILTRO OPERACIONAL)
 # ==============================================================================
 @login_required
 def dashboard(request):
-    # Coleta os projetos reais do banco PostgreSQL
+    # 1. Fluxo de Exclusão Física via parâmetro na URL (?excluir=id)
+    id_excluir = request.GET.get('excluir')
+    if id_excluir:
+        Project.objects.filter(id=id_excluir).delete()
+        messages.success(request, "Projeto removido permanentemente do PostgreSQL.")
+        return redirect('dashboard')
+
+    # 2. Fluxo de Salvamento / Edição vindo do Modal Global
+    if request.method == 'POST':
+        projeto_id = request.POST.get('projeto_id')
+        title = request.POST.get('title')
+        client = request.POST.get('client')
+        desc = request.POST.get('desc')
+        status = request.POST.get('status')
+        priority = request.POST.get('priority')
+        owner = request.POST.get('owner')
+        
+        # Trata o progresso enviado em branco para não quebrar a conversão de tipo
+        progress_raw = request.POST.get('progress')
+        progress = int(progress_raw) if progress_raw and progress_raw.strip() else 0
+        
+        # Captura as inputs de data do formulário
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        
+        # Correção estrita de sintaxe Python: substituído 'null' por 'None'
+        if not start_date or not start_date.strip(): start_date = None
+        if not end_date or not end_date.strip(): end_date = None
+
+        if projeto_id:  # Modo de Edição de Registro Existente
+            Project.objects.filter(id=projeto_id).update(
+                title=title, client=client, desc=desc, status=status,
+                priority=priority, progress=progress, owner=owner,
+                start_date=start_date, end_date=end_date
+            )
+            messages.success(request, f"Projeto '{title}' atualizado com sucesso!")
+        else:  # Modo de Criação de Novo Registro
+            Project.objects.create(
+                title=title, client=client, desc=desc, status=status,
+                priority=priority, progress=progress, owner=owner,
+                start_date=start_date, end_date=end_date
+            )
+            messages.success(request, f"Projeto '{title}' cadastrado com sucesso!")
+        
+        return redirect('dashboard')
+
+    # Coleta de listagem em tempo real de todos os registros para alimentação do front
     projetos_lista = Project.objects.all().order_by('-id')
-    
-    # Agrega os dados por status para alimentar o gráfico Donut lateral
-    data = Project.objects.values('status').annotate(count=models.Count('id'))
-    
-    context = {
-        'projetos_lista': projetos_lista,
-        'data': data
-    }
-    return render(request, 'core/dashboard.html', context)
+    return render(request, 'core/dashboard.html', {'projetos_lista': projetos_lista})
 
 
 # ==============================================================================
