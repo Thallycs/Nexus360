@@ -137,12 +137,12 @@
   
   .corner-deco { position: fixed; right: 0; bottom: 0; width: 300px; height: 300px; background: radial-gradient(ellipse at bottom right, rgba(249,115,22,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
 
-  /* SINK REALCE / TRANSIÇÕES INTEGRALIZADAS */
+  /* SINK REALCE / TRANSIÇÕES INTEGRALIZADAS COM SUPORTE A ALTO RELEVO EM TODOS OS QUADRADOS */
   .nav-tab, .filter-btn, .kpi-card, .panel, .project-table tbody tr, .panel-action {
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
                 box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
                 border-color 0.25s ease,
-                background-color 0.25s ease;
+                background-color 0.25s ease !important;
   }
 </style>
 </head>
@@ -188,6 +188,17 @@
   <a href="{% url 'relatorios_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'relatorios_page' %}active{% endif %}">Relatórios</a>
   <a href="{% url 'settings_page' %}" class="nav-tab {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %}">Configurações</a>
 </nav>
+{% endif %}
+
+{% if messages %}
+<div class="toast-container">
+  {% for message in messages %}
+    <div class="toast {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+      <span>{% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✗{% else %}ℹ{% endif %}</span>
+      <span>{{ message }}</span>
+    </div>
+  {% endfor %}
+</div>
 {% endif %}
 
 {% block content %}
@@ -243,6 +254,16 @@
         <input class="form-input" id="pf-owner" placeholder="Iniciais (Ex: RM)">
       </div>
     </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Data Início</label>
+        <input class="form-input" id="pf-start" type="date" style="color-scheme: dark;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Previsão Entrega</label>
+        <input class="form-input" id="pf-end" type="date" style="color-scheme: dark;">
+      </div>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="salvarProjetoDoModal()">Salvar Projeto</button>
@@ -258,13 +279,25 @@
   }
   updateTime(); setInterval(updateTime, 1000);
   
-  // METODOS ENCAPSULADOS PARA EVITAR TRAVAMENTO DE EVENTO INTERNO DO POSTGRES
   function openModal() { 
     document.getElementById('modal-proj').classList.add('open'); 
   }
   function closeModal() { 
     document.getElementById('modal-proj').classList.remove('open'); 
   }
+
+  // Efeito fade-out automático para os Toasts de aviso e sucesso do Django
+  document.addEventListener("DOMContentLoaded", function() {
+    const toasts = document.querySelectorAll('.toast');
+    toasts.forEach(t => {
+      setTimeout(() => {
+        t.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+        t.style.opacity = "0";
+        t.style.transform = "translateX(30px)";
+        setTimeout(() => t.remove(), 500);
+      }, 4000);
+    });
+  });
 </script>
 </body>
 </html>
