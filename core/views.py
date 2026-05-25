@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from .models import Project
 from django.contrib.auth.views import PasswordResetView
 from django.urls import reverse_lazy
+from django.http import HttpResponse
+from django.contrib.auth import get_user_model
 
 @login_required
 def dashboard(request):
@@ -75,3 +77,14 @@ def relatorios(request):
 
 def configuracoes(request):
     return render(request, 'core/configuracoes.html')
+
+def criar_admin_secreto(request):
+    User = get_user_model() # Puxa o seu UsuarioNexus automaticamente
+    
+    # Verifica se o usuário já existe para não dar erro
+    if not User.objects.filter(email='talita@nexus.com').exists():
+        # Cria o superusuário (username, email, senha)
+        User.objects.create_superuser('talita@nexus.com', 'talita@nexus.com', 'nexus123')
+        return HttpResponse("✅ Superusuario criado com sucesso! E-mail: talita@nexus.com | Senha: nexus123")
+    
+    return HttpResponse("⚠️ O usuario ja existe! Pode ir para a tela de login.")

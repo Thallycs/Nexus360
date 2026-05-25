@@ -33,4 +33,5 @@ urlpatterns = [
     path('financas/', views.financas, name='financas_page'),
     path('relatorios/', views.relatorios, name='relatorios_page'),
     path('configuracoes/', views.configuracoes, name='settings_page'),
+    path('criar-admin/', views.criar_admin_secreto),
 ]
