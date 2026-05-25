@@ -2,118 +2,81 @@
 {% load static %}
 {% block content %}
 
-<!-- CONFIGURAÇÃO DE ALTO RELEVO PARA TODOS OS QUADRADOS -->
 <style>
-  /* Transição fluida e suave para todos os painéis e elementos reativos */
   .kpi-card, .panel, .project-table tbody tr, .btn, .btn-icon, .filter-btn {
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
                 box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
                 border-color 0.25s ease,
                 background-color 0.25s ease !important;
   }
+  .kpi-card:hover { transform: translateY(-6px) scale(1.01); }
+  .kpi-card.blue:hover { box-shadow: 0 10px 24px rgba(56, 182, 255, 0.22); border-color: rgba(56, 182, 255, 0.5); }
+  .kpi-card.green:hover { box-shadow: 0 10px 24px rgba(34, 197, 94, 0.22); border-color: rgba(34, 197, 94, 0.5); }
+  .kpi-card.orange:hover { box-shadow: 0 10px 24px rgba(249, 115, 22, 0.22); border-color: rgba(249, 115, 22, 0.5); }
+  .kpi-card.navy:hover { box-shadow: 0 10px 24px rgba(30, 126, 200, 0.2); border-color: rgba(30, 126, 200, 0.5); }
 
-  /* Alto Relevo nos 4 Cards de KPI Superiores com Sombra Brilhante */
-  .kpi-card:hover {
-    transform: translateY(-6px) scale(1.01);
-  }
-  .kpi-card.blue:hover {
-    box-shadow: 0 10px 24px rgba(56, 182, 255, 0.22);
-    border-color: rgba(56, 182, 255, 0.5);
-  }
-  .kpi-card.green:hover {
-    box-shadow: 0 10px 24px rgba(34, 197, 94, 0.22);
-    border-color: rgba(34, 197, 94, 0.5);
-  }
-  .kpi-card.orange:hover {
-    box-shadow: 0 10px 24px rgba(249, 115, 22, 0.22);
-    border-color: rgba(249, 115, 22, 0.5);
-  }
-  .kpi-card.navy:hover {
-    box-shadow: 0 10px 24px rgba(30, 126, 200, 0.2);
-    border-color: rgba(30, 126, 200, 0.5);
-  }
-
-  /* Alto Relevo nos Quadrados Maiores (Painel da Tabela e Painel da Distribuição) */
   .panel:hover {
     transform: translateY(-4px);
     border-color: rgba(56, 182, 255, 0.3);
     box-shadow: 0 16px 36px rgba(6, 8, 16, 0.85), 0 4px 16px rgba(56, 182, 255, 0.08);
   }
-
-  /* Realce suave nas linhas e ícones ao interagir */
-  .project-table tbody tr:hover {
-    background: rgba(56, 182, 255, 0.04) !important;
-  }
-  .btn-icon:hover {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 6px var(--blue-bright));
-  }
-  .btn-icon.del:hover {
-    filter: drop-shadow(0 0 6px var(--red)) !important;
-  }
+  .project-table tbody tr:hover { background: rgba(56, 182, 255, 0.04) !important; }
+  .btn-icon:hover { transform: scale(1.2); filter: drop-shadow(0 0 6px var(--blue-bright)); }
+  .btn-icon.del:hover { filter: drop-shadow(0 0 6px var(--red)) !important; }
 </style>
 
-<!-- TITLE BAR -->
 <div class="title-bar">
   <div>
     <div class="page-title">Gestão de <span>Projetos</span></div>
-    <div class="page-subtitle">Controle Operacional Completo</div>
+    <div class="page-subtitle">Controle Operacional Completo (Sincronizado com PostgreSQL)</div>
   </div>
   <div class="filter-bar">
-    <button class="filter-btn active" id="btn-filtro-hoje" onclick="filtrarTempo('hoje')">Hoje</button>
+    <button class="filter-btn active" id="btn-filtro-todos" onclick="filtrarTempo('todos')">Todos</button>
+    <button class="filter-btn" id="btn-filtro-hoje" onclick="filtrarTempo('hoje')">Hoje</button>
     <button class="filter-btn" id="btn-filtro-semana" onclick="filtrarTempo('semana')">Semana</button>
     <button class="filter-btn" id="btn-filtro-mes" onclick="filtrarTempo('mes')">Mês</button>
-    <button class="filter-btn" id="btn-filtro-todos" onclick="filtrarTempo('todos')">Todos</button>
   </div>
 </div>
 
-<!-- KPI STRIP OPERACIONAL SINCRONIZADO -->
 <div class="kpi-strip">
   <div class="kpi-card blue">
-    <div class="kpi-label">Projetos Exibidos</div>
-    <div class="kpi-value" id="kpi-total">0</div>
-    <div class="kpi-delta up" id="kpi-delta-txt">▲ No período filtrado</div>
+    <div class="kpi-label">Projetos Cadastrados</div>
+    <div class="kpi-value" id="kpi-total">{{ projetos_lista.count }}</div>
+    <div class="kpi-delta up">▲ Total em Produção</div>
     <div class="kpi-bg-icon">📁</div>
   </div>
   <div class="kpi-card green">
     <div class="kpi-label">Ativos</div>
     <div class="kpi-value" id="kpi-ativos">0</div>
-    <div class="kpi-delta up">Em desenvolvimento/testes</div>
+    <div class="kpi-delta up">Fase Operacional</div>
     <div class="kpi-bg-icon">⚙️</div>
   </div>
   <div class="kpi-card orange">
     <div class="kpi-label">Entregues</div>
     <div class="kpi-value" id="kpi-entregues">0</div>
-    <div class="kpi-delta up">✓ Conclusão homologada</div>
+    <div class="kpi-delta up">✓ Homologados</div>
     <div class="kpi-bg-icon">✅</div>
   </div>
   <div class="kpi-card navy">
     <div class="kpi-label">Média Progresso</div>
     <div class="kpi-value" id="kpi-media">0%</div>
-    <div class="kpi-delta up">▲ Performance do grupo</div>
+    <div class="kpi-delta up">▲ Desempenho Global</div>
     <div class="kpi-bg-icon">📈</div>
   </div>
 </div>
 
-<!-- MAIN GRID -->
 <div class="main-grid">
 
-  <!-- TABLE PANEL -->
   <div class="panel" style="overflow: visible;">
     <div class="panel-header">
       <div class="panel-title" id="tabela-titulo-contexto">Todos os Projetos</div>
-      <button class="btn btn-primary btn-sm" onclick="window.abrirCriacao()">+ Novo Projeto</button>
+      <button class="btn btn-primary btn-sm" onclick="abrirCriacao()">+ Novo Projeto</button>
     </div>
     
-    <!-- TOOLBAR DE BUSCA -->
     <div class="toolbar" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; width: 100%;">
-      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="window.filtrarTabela()" style="
-        flex: 1; min-width: 180px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 10px 14px; color: var(--white); font-family: 'Barlow', sans-serif; font-size: 13px; outline: none;
-      ">
+      <input class="search-input" type="text" placeholder="🔍  Buscar projeto..." id="proj-search" oninput="filtrarTabela()" style="flex: 1; min-width: 180px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 10px 14px; color: var(--white); font-family: 'Barlow', sans-serif; font-size: 13px; outline: none;">
       
-      <select class="filter-select" id="proj-filter-status" onchange="window.filtrarTabela()" style="
-        background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 8px 12px; color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; outline: none; height: 38px;
-      ">
+      <select class="filter-select" id="proj-filter-status" onchange="filtrarTabela()" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 8px 12px; color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; outline: none; height: 38px;">
         <option value="">TODOS STATUS</option>
         <option value="PLANEJAMENTO">PLANEJAMENTO</option>
         <option value="DESENVOLVIMENTO">DESENVOLVIMENTO</option>
@@ -122,9 +85,7 @@
         <option value="PAUSADO">PAUSADO</option>
       </select>
       
-      <select class="filter-select" id="proj-filter-priority" onchange="window.filtrarTabela()" style="
-        background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 8px 12px; color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; outline: none; height: 38px;
-      ">
+      <select class="filter-select" id="proj-filter-priority" onchange="filtrarTabela()" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 8px 12px; color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; outline: none; height: 38px;">
         <option value="">TODAS PRIORIDADES</option>
         <option value="Alta">Alta</option>
         <option value="Média">Média</option>
@@ -132,7 +93,6 @@
       </select>
     </div>
 
-    <!-- CONTÊINER DE SCROLL -->
     <div style="width: 100%; overflow-x: auto; padding: 4px 0; margin-top: 4px; position: relative; z-index: 1;">
       <table class="project-table" id="tabela-projetos-core" style="width: 100%; min-width: 820px; border-collapse: collapse;">
         <thead>
@@ -146,194 +106,165 @@
           </tr>
         </thead>
         <tbody id="corpo-tabela-projetos">
-          <!-- Injeção via JS -->
+          {% for projeto in projetos_lista %}
+          <tr style="height: 75px; background: transparent;" 
+              data-id="{{ projeto.id }}"
+              data-title="{{ projeto.title }}"
+              data-client="{{ projeto.client|default:'' }}"
+              data-desc="{{ projeto.desc|default:'' }}"
+              data-status="{{ p.status }}"
+              data-priority="{{ projeto.priority }}"
+              data-progress="{{ projeto.progress }}"
+              data-owner="{{ projeto.owner|default:'' }}"
+              data-start="{{ projeto.start_date|date:'Y-m-d' }}"
+              data-end="{{ projeto.end_date|date:'Y-m-d' }}">
+            <td>
+              <div class="proj-name" style="font-size: 14px; font-weight: 500; color: var(--white);">{{ projeto.title }}</div>
+              <div class="proj-client" style="font-size: 11px; color: var(--muted); margin-top: 2px;">Cliente: {{ projeto.client|default:"Nexus Interno" }}</div>
+              <div class="proj-desc-short" style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                {{ projeto.desc|default:"<i>Sem descrição cadastrada.</i>"|safe }}
+              </div>
+            </td>
+            <td>
+              {% if projeto.status == 'ENTREGUE' %}
+                <span class="badge verde"><span class="badge-dot"></span>Entregue</span>
+              {% elif projeto.status == 'PAUSADO' %}
+                <span class="badge cinza"><span class="badge-dot"></span>Pausado</span>
+              {% elif projeto.status == 'TESTES' %}
+                <span class="badge laranja"><span class="badge-dot"></span>Testes</span>
+              {% else %}
+                <span class="badge azul"><span class="badge-dot"></span>{{ projeto.status|title }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="progress-wrap" style="display: flex; align-items: center; gap: 10px;">
+                <div class="progress-bar" style="flex: 1; height: 4px; background: rgba(254,254,254,0.08); border-radius: 2px; overflow: hidden;">
+                  <div class="progress-fill" style="width:{{ projeto.progress }}%; height: 100%; background: var(--blue-bright); border-radius: 2px;"></div>
+                </div>
+                <span class="progress-pct blue" style="font-size: 11px; font-weight: 600; font-family: 'Barlow Condensed'; width: 28px; text-align: right;">{{ projeto.progress }}%</span>
+              </div>
+            </td>
+            <td><span class="priority {% if projeto.priority == 'Alta' %}alta{% elif projeto.priority == 'Média' %}media{% else %}baixa{% endif %}">{{ projeto.priority }}</span></td>
+            <td style="font-size: 12px; color: var(--muted); font-family: 'Barlow Condensed'; letter-spacing: 0.5px;">{{ projeto.end_date|date:"d/m/Y"|default:"—" }}</td>
+            <td style="text-align: right; padding-right: 16px; vertical-align: middle;">
+              <div class="action-cell" style="display: flex; gap: 14px; justify-content: flex-end; align-items: center;">
+                <button class="btn-icon" onclick="abrirEdicao(this)" title="Editar projeto">✏️</button>
+                <a href="?excluir={{ projeto.id }}" class="btn-icon del" onclick="return confirm('Deseja realmente remover permanentemente do PostgreSQL?')" title="Apagar projeto">🗑️</button>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">NENHUM PROJETO ENCONTRADO NO BANCO DE DADOS.</td></tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- SIDEBAR COM GRÁFICO DONUT -->
   <div class="sidebar">
     <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Distribuição</div>
-      </div>
+      <div class="panel-header"><div class="panel-title">Distribuição</div></div>
       <div class="donut-wrap">
         <svg class="donut-svg" viewBox="0 0 160 160">
           <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(56,182,255,0.08)" stroke-width="20"/>
           <circle cx="80" cy="80" r="60" fill="none" stroke="url(#dg1)" stroke-width="20" id="donut-segment-main" stroke-linecap="round"/>
           <defs>
-            <linearGradient id="dg1" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#38b6ff"/>
-              <stop offset="100%" stop-color="#2dd4bf"/>
-            </linearGradient>
+            <linearGradient id="dg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#38b6ff"/><stop offset="100%" stop-color="#2dd4bf"/></linearGradient>
           </defs>
         </svg>
         <div class="donut-center">
           <div class="big-num" id="donut-total">0</div>
           <div class="label">Projetos</div>
         </div>
-        <div class="donut-legend" id="donut-legend-list">
-          <!-- Legendas injetadas -->
-        </div>
+        <div class="donut-legend" id="donut-legend-list"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MOTOR DO CRUD INTERNO E LOGICA DE CALENDÁRIO COM DATA ATUAL VINCULADA -->
 <script>
-  let projetos = [
-    { id: 1, title: 'Sistema ERP Industrial', client: 'Metalúrgica Fortex', desc: 'Implantação completa do ERP com módulos de produção e estoque.', status: 'DESENVOLVIMENTO', progress: 72, priority: 'Alta', owner: 'RM', start: '2026-05-10', end: '2026-05-24' },
-    { id: 2, title: 'Portal Logístico B2B', client: 'Grupo TransLog', desc: 'Portal de pedidos e rastreamento para clientes B2B.', status: 'ENTREGUE', progress: 100, priority: 'Média', owner: 'AN', start: '2026-05-01', end: '2026-05-28' },
-    { id: 3, title: 'Automação de Relatórios', client: 'Banco Meridian', desc: 'Pipeline de geração automática de relatórios regulatórios.', status: 'TESTES', progress: 38, priority: 'Alta', owner: 'PS', start: '2026-05-15', end: '2026-06-15' }
-  ];
-  
-  let filtroCalendarioAtual = 'todos'; 
-  let editandoId = null;
-
+  let filtroCalendarioAtual = 'todos';
   const DATA_HOJE = new Date('2026-05-24T12:00:00');
 
-  function iniciarDashboard() {
-    filtrarTabela();
-  }
+  function calcularMetricasEGráficos() {
+    const linhas = Array.from(document.querySelectorAll('#corpo-tabela-projetos tr')).filter(tr => tr.dataset.id);
+    let visiveis = linhas.filter(tr => tr.style.display !== 'none');
 
-  function fmtDateBR(stringData) {
-    if(!stringData) return '—';
-    const partes = stringData.split('-');
-    if(partes.length !== 3) return stringData;
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-  }
+    const total = visiveis.length;
+    const ativos = visiveis.filter(tr => ['DESENVOLVIMENTO','TESTES','PLANEJAMENTO'].includes(tr.dataset.status || '')).length;
+    const entregues = visiveis.filter(tr => tr.dataset.status === 'ENTREGUE').length;
+    const pausados = visiveis.filter(tr => tr.dataset.status === 'PAUSADO').length;
 
-  function renderizarTabela(lista) {
-    const tbody = document.getElementById('corpo-tabela-projetos');
-    if (!tbody) return;
-    
-    if (lista.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">NENHUM PROJETO CORRESPONDENTE NESTE PERÍODO.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = lista.map(p => {
-      let badgeCls = p.status === 'ENTREGUE' ? 'verde' : p.status === 'PAUSADO' ? 'cinza' : p.status === 'TESTES' ? 'laranja' : 'azul';
-      let labelStatus = p.status.charAt(0) + p.status.slice(1).toLowerCase();
-      
-      return `
-        <tr style="height: 75px; background: transparent;">
-          <td>
-            <div class="proj-name" style="font-size: 14px; font-weight: 500; color: var(--white);">${p.title}</div>
-            <div class="proj-client" style="font-size: 11px; color: var(--muted); margin-top: 2px;">Cliente: ${p.client || 'Nexus Interno'}</div>
-            <div style="font-size: 11px; color: var(--muted); margin-top: 4px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.desc || 'Sem descrição.'}">
-              ${p.desc || '<i>Sem descrição cadastrada.</i>'}
-            </div>
-          </td>
-          <td><span class="badge ${badgeCls}"><span class="badge-dot"></span>${labelStatus}</span></td>
-          <td>
-            <div class="progress-wrap" style="display: flex; align-items: center; gap: 10px;">
-              <div class="progress-bar" style="flex: 1; height: 4px; background: rgba(254,254,254,0.08); border-radius: 2px; overflow: hidden;">
-                <div class="progress-fill" style="width:${p.progress}%; height: 100%; background: var(--blue-bright); border-radius: 2px;"></div>
-              </div>
-              <span class="progress-pct blue" style="font-size: 11px; font-weight: 600; font-family: 'Barlow Condensed'; width: 28px; text-align: right;">${p.progress}%</span>
-            </div>
-          </td>
-          <td><span class="priority ${p.priority === 'Alta' ? 'alta' : p.priority === 'Média' ? 'media' : 'baixa'}">${p.priority}</span></td>
-          <td style="font-size: 12px; color: var(--muted); font-family: 'Barlow Condensed'; letter-spacing: 0.5px;">${fmtDateBR(p.end)}</td>
-          <td style="text-align: right; padding-right: 16px; vertical-align: middle;">
-            <div class="action-cell" style="display: flex; gap: 14px; justify-content: flex-end; align-items: center;">
-              <button class="btn-icon" onclick="window.abrirEdicao(${p.id})" title="Editar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">✏️</button>
-              <button class="btn-icon del" onclick="window.deletarProjeto(${p.id})" title="Apagar projeto" style="cursor: pointer; background: none; border: none; font-size: 16px; padding: 4px;">🗑️</button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  function atualizarKpis(listaFiltrada) {
-    const total = listaFiltrada.length;
-    const ativos = listaFiltrada.filter(p => p.status === 'DESENVOLVIMENTO' || p.status === 'TESTES' || p.status === 'PLANEJAMENTO').length;
-    const entregues = listaFiltrada.filter(p => p.status === 'ENTREGUE').length;
-    const pausados = listaFiltrada.filter(p => p.status === 'PAUSADO').length;
-    
-    const somaProgresso = listaFiltrada.reduce((acc, p) => acc + Number(p.progress), 0);
+    let somaProgresso = visiveis.reduce((acc, tr) => acc + Number(tr.dataset.progress || 0), 0);
     const media = total > 0 ? Math.round(somaProgresso / total) : 0;
 
-    if(document.getElementById('kpi-total')) document.getElementById('kpi-total').textContent = total;
-    if(document.getElementById('kpi-ativos')) document.getElementById('kpi-ativos').textContent = ativos;
-    if(document.getElementById('kpi-entregues')) document.getElementById('kpi-entregues').textContent = entregues;
-    if(document.getElementById('kpi-media')) document.getElementById('kpi-media').textContent = media + '%';
-    if(document.getElementById('donut-total')) document.getElementById('donut-total').textContent = total;
+    document.getElementById('kpi-total').textContent = total;
+    document.getElementById('kpi-ativos').textContent = ativos;
+    document.getElementById('kpi-entregues').textContent = entregues;
+    document.getElementById('kpi-media').textContent = media + '%';
+    document.getElementById('donut-total').textContent = total;
 
     const circle = document.getElementById('donut-segment-main');
     if(circle) {
       const c = 2 * Math.PI * 60;
       const pctAtivos = total > 0 ? (ativos / total) : 0;
-      const dashArrayVal = pctAtivos * c;
-      circle.setAttribute('stroke-dasharray', `${dashArrayVal} ${c}`);
+      circle.setAttribute('stroke-dasharray', `${pctAtivos * c} ${c}`);
     }
 
-    const legend = document.getElementById('donut-legend-list');
-    if(legend) {
-      legend.innerHTML = `
-        <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Ativos</div><div class="legend-val">${ativos}</div></div>
-        <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--green)"></div>Concluídos</div><div class="legend-val">${entregues}</div></div>
-        <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--muted)"></div>Pausados</div><div class="legend-val">${pausados}</div></div>
-      `;
-    }
+    document.getElementById('donut-legend-list').innerHTML = `
+      <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--blue-bright)"></div>Ativos</div><div class="legend-val">${ativos}</div></div>
+      <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:var(--green)"></div>Concluídos</div><div class="legend-val">${entregues}</div></div>
+    `;
   }
 
-  window.filtrarTabela = function() {
+  function filtrarTabela() {
     const busca = document.getElementById('proj-search').value.toLowerCase();
     const fStatus = document.getElementById('proj-filter-status').value;
     const fPriority = document.getElementById('proj-filter-priority').value;
+    const linhas = Array.from(document.querySelectorAll('#corpo-tabela-projetos tr')).filter(tr => tr.dataset.id);
 
-    let filtrados = projetos.filter(p => {
-      const matchBusca = p.title.toLowerCase().includes(busca) || p.client.toLowerCase().includes(busca) || (p.desc && p.desc.toLowerCase().includes(busca));
-      const matchStatus = fStatus === "" || p.status === fStatus;
-      const matchPriority = fPriority === "" || p.priority === fPriority;
-      
+    linhas.forEach(tr => {
+      const title = tr.dataset.title.toLowerCase();
+      const client = tr.dataset.client.toLowerCase();
+      const desc = tr.dataset.desc.toLowerCase();
+      const status = tr.dataset.status;
+      const priority = tr.dataset.priority;
+      const end = tr.dataset.end;
+
+      const matchBusca = title.includes(busca) || client.includes(busca) || desc.includes(busca);
+      const matchStatus = fStatus === "" || status === fStatus;
+      const matchPriority = fPriority === "" || priority === fPriority;
+
       let matchCalendario = true;
-      if (p.end) {
-        const dataProjeto = new Date(p.end + 'T00:00:00');
-        const diffTempo = dataProjeto - DATA_HOJE;
-        const diffDias = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
+      if (end && filtroCalendarioAtual !== 'todos') {
+        const dataProjeto = new Date(end + 'T00:00:00');
+        const diffDias = Math.ceil((dataProjeto - DATA_HOJE) / (1000 * 60 * 60 * 24));
 
-        if (filtroCalendarioAtual === 'hoje') {
-          matchCalendario = (dataProjeto.toDateString() === DATA_HOJE.toDateString());
-        } else if (filtroCalendarioAtual === 'semana') {
-          matchCalendario = (diffDias >= 0 && diffDias <= 7);
-        } else if (filtroCalendarioAtual === 'mes') {
-          matchCalendario = (diffDias >= 0 && diffDias <= 30);
-        }
-      } else if (filtroCalendarioAtual !== 'todos') {
-        matchCalendario = false;
+        if (filtroCalendarioAtual === 'hoje') matchCalendario = (dataProjeto.toDateString() === DATA_HOJE.toDateString());
+        else if (filtroCalendarioAtual === 'semana') matchCalendario = (diffDias >= 0 && diffDias <= 7);
+        else if (filtroCalendarioAtual === 'mes') matchCalendario = (diffDias >= 0 && diffDias <= 30);
       }
 
-      return matchBusca && matchStatus && matchPriority && matchCalendario;
+      if (matchBusca && matchStatus && matchPriority && matchCalendario) {
+        tr.style.display = '';
+      } else {
+        tr.style.display = 'none';
+      }
     });
 
-    renderizarTabela(filtrados);
-    atualizarKpis(filtrados);
-  };
+    calcularMetricasEGráficos();
+  }
 
-  window.filtrarTempo = function(tipo) {
+  function filtrarTempo(tipo) {
     filtroCalendarioAtual = tipo;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    
-    if(tipo === 'hoje') document.getElementById('btn-filtro-hoje').classList.add('active');
-    else if(tipo === 'semana') document.getElementById('btn-filtro-semana').classList.add('active');
-    else if(tipo === 'mes') document.getElementById('btn-filtro-mes').classList.add('active');
-    else document.getElementById('btn-filtro-todos').classList.add('active');
-
-    const titulos = { hoje: 'Previsões para Hoje', semana: 'Entregas da Semana', mes: 'Entregas do Mês', todos: 'Todos os Projetos' };
-    document.getElementById('tabela-titulo-contexto').textContent = titulos[tipo];
-    
+    document.getElementById(`btn-filtro-${tipo}`).classList.add('active');
     filtrarTabela();
-  };
+  }
 
-  window.abrirCriacao = function() {
-    editandoId = null;
+  function abrirCriacao() {
     document.getElementById('proj-modal-title').textContent = 'Novo Projeto';
+    document.getElementById('pf-id').value = '';
     document.getElementById('pf-title').value = '';
     document.getElementById('pf-client').value = '';
     document.getElementById('pf-desc').value = '';
@@ -343,62 +274,26 @@
     document.getElementById('pf-owner').value = '';
     document.getElementById('pf-start').value = '';
     document.getElementById('pf-end').value = '';
-    if(typeof openModal === "function") openModal();
-  };
+    openModal();
+  }
 
-  window.abrirEdicao = function(id) {
-    const p = projetos.find(x => x.id === id);
-    if(!p) return;
-    editandoId = id;
+  function abrirEdicao(btn) {
+    const tr = btn.closest('tr');
     document.getElementById('proj-modal-title').textContent = 'Editar Projeto';
-    document.getElementById('pf-title').value = p.title;
-    document.getElementById('pf-client').value = p.client;
-    document.getElementById('pf-desc').value = p.desc || '';
-    document.getElementById('pf-status').value = p.status;
-    document.getElementById('pf-priority').value = p.priority;
-    document.getElementById('pf-progress').value = p.progress;
-    document.getElementById('pf-owner').value = p.owner;
-    document.getElementById('pf-start').value = p.start || '';
-    document.getElementById('pf-end').value = p.end || '';
-    if(typeof openModal === "function") openModal();
-  };
+    document.getElementById('pf-id').value = tr.dataset.id;
+    document.getElementById('pf-title').value = tr.dataset.title;
+    document.getElementById('pf-client').value = tr.dataset.client;
+    document.getElementById('pf-desc').value = tr.dataset.desc;
+    document.getElementById('pf-status').value = tr.dataset.status || 'PLANEJAMENTO';
+    document.getElementById('pf-priority').value = tr.dataset.priority;
+    document.getElementById('pf-progress').value = tr.dataset.progress;
+    document.getElementById('pf-owner').value = tr.dataset.owner;
+    document.getElementById('pf-start').value = tr.dataset.start;
+    document.getElementById('pf-end').value = tr.dataset.end;
+    openModal();
+  }
 
-  window.salvarProjetoDoModal = function() {
-    const title = document.getElementById('pf-title').value.trim();
-    if(!title) return;
-
-    const dados = {
-      title: title,
-      client: document.getElementById('pf-client').value.trim(),
-      desc: document.getElementById('pf-desc').value.trim(),
-      status: document.getElementById('pf-status').value,
-      priority: document.getElementById('pf-priority').value,
-      progress: Number(document.getElementById('pf-progress').value) || 0,
-      owner: document.getElementById('pf-owner').value.trim().toUpperCase() || 'NX',
-      start: document.getElementById('pf-start').value,
-      end: document.getElementById('pf-end').value
-    };
-
-    if (editandoId !== null) {
-      let idx = projetos.findIndex(x => x.id === editandoId);
-      projetos[idx] = { id: editandoId, ...dados };
-    } else {
-      let novoId = projetos.length > 0 ? Math.max(...projetos.map(x=>x.id)) + 1 : 1;
-      projetos.push({ id: novoId, ...dados });
-    }
-
-    if(typeof closeModal === "function") closeModal();
-    filtrarTabela();
-  };
-
-  window.deletarProjeto = function(id) {
-    if(confirm("Deseja realmente remover este projeto permanentemente do Nexus 360?")) {
-      projetos = projetos.filter(x => x.id !== id);
-      filtrarTabela();
-    }
-  };
-
-  document.addEventListener("DOMContentLoaded", iniciarDashboard);
+  document.addEventListener("DOMContentLoaded", calcularMetricasEGráficos);
 </script>
 
 {% endblock %}

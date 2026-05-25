@@ -137,12 +137,12 @@
   
   .corner-deco { position: fixed; right: 0; bottom: 0; width: 300px; height: 300px; background: radial-gradient(ellipse at bottom right, rgba(249,115,22,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
 
-  /* SINK REALCE / TRANSIÇÕES INTEGRALIZADAS COM SUPORTE A ALTO RELEVO EM TODOS OS QUADRADOS */
+  /* MANTÉM AS TRANSIÇÕES DE ACORDO COM O DESIGN GLOBAL */
   .nav-tab, .filter-btn, .kpi-card, .panel, .project-table tbody tr, .panel-action {
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
                 box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
                 border-color 0.25s ease,
-                background-color 0.25s ease !important;
+                background-color 0.25s ease;
   }
 </style>
 </head>
@@ -205,29 +205,32 @@
 {% endblock %}
 
 <div class="modal-overlay" id="modal-proj">
-  <div class="modal">
+  <form class="modal" method="POST" id="form-projeto-core" action="{% url 'dashboard' %}">
+    {% csrf_token %}
+    <input type="hidden" name="projeto_id" id="pf-id" value="">
+    
     <div class="modal-header">
       <div class="modal-title" id="proj-modal-title">Novo Projeto</div>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <button type="button" class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Título *</label>
-        <input class="form-input" id="pf-title" placeholder="Nome do projeto">
+        <input class="form-input" name="title" id="pf-title" required placeholder="Nome do projeto">
       </div>
       <div class="form-group">
         <label class="form-label">Cliente</label>
-        <input class="form-input" id="pf-client" placeholder="Nome do cliente">
+        <input class="form-input" name="client" id="pf-client" placeholder="Nome do cliente">
       </div>
     </div>
     <div class="form-group">
       <label class="form-label">Descrição</label>
-      <textarea class="form-textarea" id="pf-desc" placeholder="Descreva os detalhes do projeto..." style="min-height: 75px; resize: vertical;"></textarea>
+      <textarea class="form-textarea" name="desc" id="pf-desc" placeholder="Descreva os detalhes do projeto..." style="min-height: 75px; resize: vertical;"></textarea>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Status</label>
-        <select class="form-select" id="pf-status">
+        <select class="form-select" name="status" id="pf-status">
           <option value="PLANEJAMENTO">🗂 PLANEJAMENTO</option>
           <option value="DESENVOLVIMENTO">⚙ DESENVOLVIMENTO</option>
           <option value="TESTES">🧪 TESTES</option>
@@ -237,7 +240,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Prioridade</label>
-        <select class="form-select" id="pf-priority">
+        <select class="form-select" name="priority" id="pf-priority">
           <option value="Alta">Alta</option>
           <option value="Média">Média</option>
           <option value="Baixa">Baixa</option>
@@ -247,28 +250,28 @@
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Progresso (%)</label>
-        <input class="form-input" id="pf-progress" type="number" min="0" max="100" value="0">
+        <input class="form-input" name="progress" id="pf-progress" type="number" min="0" max="100" value="0">
       </div>
       <div class="form-group">
         <label class="form-label">Responsável</label>
-        <input class="form-input" id="pf-owner" placeholder="Iniciais (Ex: RM)">
+        <input class="form-input" name="owner" id="pf-owner" placeholder="Iniciais (Ex: RM)">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Data Início</label>
-        <input class="form-input" id="pf-start" type="date" style="color-scheme: dark;">
+        <input class="form-input" name="start_date" id="pf-start" type="date" style="color-scheme: dark;">
       </div>
       <div class="form-group">
         <label class="form-label">Previsão Entrega</label>
-        <input class="form-input" id="pf-end" type="date" style="color-scheme: dark;">
+        <input class="form-input" name="end_date" id="pf-end" type="date" style="color-scheme: dark;">
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarProjetoDoModal()">Salvar Projeto</button>
+      <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Salvar Projeto</button>
     </div>
-  </div>
+  </form>
 </div>
 
 <script>
